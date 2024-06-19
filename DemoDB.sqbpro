@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/diego/OneDrive/Documentos/GitHub/SI2023UO276901/DemoDB.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="0"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="125"/><column_width id="3" width="2734"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="7" parent="0"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,17:mainDelivery_Attempts"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="Delivery_Attempts" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="105"/><column index="2" value="108"/><column index="3" value="155"/><column index="4" value="63"/><column index="5" value="101"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Offices" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort><column index="1" mode="0"/></sort><column_widths><column index="1" value="86"/><column index="2" value="69"/><column index="3" value="129"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Users" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="74"/><column index="2" value="96"/><column index="3" value="164"/><column index="4" value="97"/><column index="5" value="69"/><column index="6" value="94"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">-- Eliminación de tablas si existen
+DROP TABLE IF EXISTS Users;
+DROP TABLE IF EXISTS Packages;
+DROP TABLE IF EXISTS Offices;
+DROP TABLE IF EXISTS Warehouses;
+DROP TABLE IF EXISTS Vehicles;
+DROP TABLE IF EXISTS Routes;
+DROP TABLE IF EXISTS Shipments;
+DROP TABLE IF EXISTS Package_Tracking;
+DROP TABLE IF EXISTS Delivery_Attempts;
+DROP TABLE IF EXISTS Rates;
+
+-- Creación de la tabla de Usuarios
+CREATE TABLE Users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100),
+    email VARCHAR(100),
+    phone VARCHAR(15),
+    city VARCHAR(100),
+    address TEXT
+);
+
+-- Creación de la tabla de Paquetes con las 3 dimensiones
+CREATE TABLE Packages (
+    package_id INT AUTO_INCREMENT PRIMARY KEY,
+    sender_id INT,
+    receiver_id INT,
+    weight DECIMAL(10, 2),
+    height DECIMAL(10, 2),
+    length DECIMAL(10, 2),
+    depth DECIMAL(10, 2),
+    status VARCHAR(50),
+    FOREIGN KEY (sender_id) REFERENCES Users(user_id),
+    FOREIGN KEY (receiver_id) REFERENCES Users(user_id)
+);
+
+-- Creación de la tabla de Oficinas
+CREATE TABLE Offices (
+    office_id INT AUTO_INCREMENT PRIMARY KEY,
+    city VARCHAR(100),
+    address TEXT
+);
+
+-- Creación de la tabla de Almacenes
+CREATE TABLE Warehouses (
+    warehouse_id INT AUTO_INCREMENT PRIMARY KEY,
+    city VARCHAR(100),
+    address TEXT
+);
+
+-- Creación de la tabla de Vehículos
+CREATE TABLE Vehicles (
+    vehicle_id INT AUTO_INCREMENT PRIMARY KEY,
+    capacity DECIMAL(10, 2),
+    current_location VARCHAR(100)
+);
+
+-- Creación de la tabla de Rutas
+CREATE TABLE Routes (
+    route_id INT AUTO_INCREMENT PRIMARY KEY,
+    origin VARCHAR(100),
+    destination VARCHAR(100),
+    waypoints TEXT
+);
+
+-- Creación de la tabla de Envios
+CREATE TABLE Shipments (
+    shipment_id INT AUTO_INCREMENT PRIMARY KEY,
+    package_id INT,
+    route_id INT,
+    vehicle_id INT,
+    pickup_date DATETIME,
+    delivery_date DATETIME,
+    FOREIGN KEY (package_id) REFERENCES Packages(package_id),
+    FOREIGN KEY (route_id) REFERENCES Routes(route_id),
+    FOREIGN KEY (vehicle_id) REFERENCES Vehicles(vehicle_id)
+);
+
+-- Creación de la tabla de Seguimiento de Paquetes
+CREATE TABLE Package_Tracking (
+    tracking_id INT AUTO_INCREMENT PRIMARY KEY,
+    package_id INT,
+    location VARCHAR(100),
+    status VARCHAR(50),
+    timestamp DATETIME,
+    FOREIGN KEY (package_id) REFERENCES Packages(package_id)
+);
+
+-- Creación de la tabla de Intentos de Entrega
+CREATE TABLE Delivery_Attempts (
+    attempt_id INT AUTO_INCREMENT PRIMARY KEY,
+    package_id INT,
+    attempt_number INT,
+    status VARCHAR(50),
+    timestamp DATETIME,
+    FOREIGN KEY (package_id) REFERENCES Packages(package_id)
+);
+
+-- Creación de la tabla de Tarifas
+CREATE TABLE Rates (
+    rate_id INT AUTO_INCREMENT PRIMARY KEY,
+    weight DECIMAL(10, 2),
+    dimensions VARCHAR(50),
+    distance DECIMAL(10, 2),
+    price DECIMAL(10, 2)
+);
+</sql><sql name="SQL 2">-- Envíos
+INSERT INTO Shipments (package_id, route_id, vehicle_id, pickup_date, delivery_date) VALUES
+(1, 1, 1, '2024-06-10 10:00:00', '2024-06-11 10:00:00'),
+(2, 2, 2, '2024-06-11 10:00:00', '2024-06-12 10:00:00'),
+(3, 3, 3, '2024-06-12 10:00:00', '2024-06-13 10:00:00'),
+(4, 4, 4, '2024-06-13 10:00:00', '2024-06-14 10:00:00');
+
+-- Seguimiento de Paquetes
+INSERT INTO Package_Tracking (package_id, location, status, timestamp) VALUES
+(1, 'Madrid', 'Picked Up', '2024-06-10 10:00:00'),
+(1, 'Valencia', 'In Transit', '2024-06-10 12:00:00'),
+(2, 'Valencia', 'Picked Up', '2024-06-11 10:00:00'),
+(2, 'Gijon', 'Delivered', '2024-06-12 10:00:00'),
+(3, 'Gijon', 'Picked Up', '2024-06-12 10:00:00'),
+(3, 'Sevilla', 'In Transit', '2024-06-12 12:00:00'),
+(4, 'Sevilla', 'Picked Up', '2024-06-13 10:00:00'),
+(4, 'Madrid', 'In Transit', '2024-06-13 12:00:00');
+
+-- Intentos de Entrega
+INSERT INTO Delivery_Attempts (package_id, attempt_number, status, timestamp) VALUES
+(1, 1, 'Failed', '2024-06-11 11:00:00'),
+(1, 2, 'Failed', '2024-06-11 12:00:00'),
+(1, 3, 'Failed', '2024-06-11 13:00:00'),
+(2, 1, 'Delivered', '2024-06-12 10:00:00'),
+(3, 1, 'Failed', '2024-06-13 11:00:00'),
+(4, 1, 'Failed', '2024-06-14 11:00:00');
+
+-- Tarifas
+INSERT INTO Rates (weight, dimensions, distance, price) VALUES
+(10.00, '40', 450.00, 55.00),
+(5.00, '35', 360.00, 40.00),
+(7.00, '45', 540.00, 65.00),
+(12.00, '5', 630.00, 80.00);
+</sql><current_tab id="0"/></tab_sql></sqlb_project>

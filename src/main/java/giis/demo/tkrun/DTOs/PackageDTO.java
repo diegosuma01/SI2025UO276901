@@ -1,52 +1,59 @@
 package giis.demo.tkrun.DTOs;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.swing.JComboBox;
 
+import giis.demo.tkrun.model.UsersModel;
 import giis.demo.util.ApplicationException;
+import giis.demo.util.Database;
+import lombok.val;
 
 public class PackageDTO {
+
+	private static final String MSG_FILL_DATA = "Fill in all the data";
+	private static final String MSG_USER_NOT_EXIST = "The user does not exist";
+
+	private Database db = new Database();
 
     /* De uso general para validacion de objetos */
 	private void validateNotNull(Object obj, String message) {
 		if (obj==null)
 			throw new ApplicationException(message);
 	}
-	private void validateCondition(boolean condition, String message) {
-		if (!condition)
-			throw new ApplicationException(message);
-	}
 
-	private int validatePhoneNumber(String phone, String message) {
-		try {
-			return Integer.parseInt(phone);
-		} catch (NumberFormatException e) {
+	private void validateId(String id, String message) {
+		validateNotNull(id, MSG_FILL_DATA);
+		String sqlIdExistSend = 
+				"SELECT user_id userId FROM USERS WHERE user_ID = ?";
+
+		List<UsersModel> listUsers = db.executeQueryPojo(UsersModel.class, sqlIdExistSend, id);
+		if (listUsers.isEmpty()) {
 			throw new ApplicationException(message);
 		}
 	}
 	
-	private void validateEmail(String email, String message) {
-        // Expresión regular para validar un correo electrónico
-		String regex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-		
-		// Compilar la expresión regular en un patrón
-		Pattern pattern = Pattern.compile(regex);
+	public void addSendPackage(String idSender, String idRec, String directionSender, String directionRec,
+			JComboBox<String> comboCitySender, JComboBox<String> comboCityRec, String width, String height,
+			String length, String weight, String price) {
+				validateNotNull(directionSender, MSG_FILL_DATA);
+				validateNotNull(directionRec, MSG_FILL_DATA);
+				validateNotNull(width, MSG_FILL_DATA);
+				validateNotNull(height, MSG_FILL_DATA);
+				validateNotNull(length, MSG_FILL_DATA);
+				validateNotNull(weight, MSG_FILL_DATA);
+				validateNotNull(price, MSG_FILL_DATA);
+				validateId(idSender, MSG_USER_NOT_EXIST);
+				validateId(idRec, MSG_USER_NOT_EXIST);
 
-		// Crear un objeto Matcher con la cadena de texto proporcionada
-        Matcher matcher = pattern.matcher(email);
+				String sqlInsertPackage = "INSERT INTO PACKAGES (SENDER_ID, RECEIVER_ID, CITYSENDER, CITYREC," + 
+						"ADDRESSSENDER, ADDRESSREC, WEIGHT, HEIGHT, LENGTH, DEPTH, STATUS, PRICE) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+				db.executeUpdate(sqlInsertPackage, idSender, idRec, comboCitySender.getSelectedItem(), comboCityRec.getSelectedItem(),
+						directionSender, directionRec, weight, height, length, width, "PENDING", price);
 
-		if(!matcher.matches())
-			throw new ApplicationException(message);
-	
+
 	}
-
-    public void addSendPackage(String nameSender, String nameRec, String phoneSender, String phoneRec,
-            String emailSender, String emailRec, String directionSender, String directionRec,
-            JComboBox<String> comboCitySender, JComboBox<String> comboCityRec, JComboBox<String> comboPackageSize,
-            String weight) {
-        
-    }
     
 }

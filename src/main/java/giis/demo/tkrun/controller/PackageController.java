@@ -3,12 +3,9 @@ package giis.demo.tkrun.controller;
 import giis.demo.tkrun.view.PackageView;
 import giis.demo.util.SwingMain;
 import giis.demo.tkrun.DTOs.PackageDTO;
-import giis.demo.tkrun.model.PackageModel;
 import giis.demo.util.SwingUtil;
 
-import javax.rmi.CORBA.Util;
 import javax.swing.JOptionPane;
-import javax.swing.table.TableColumnModel;
 
 public class PackageController {
 
@@ -33,10 +30,8 @@ public class PackageController {
 	}
 
     public void sendPackage() {
-
-		dto.addSendPackage(view.getNameSender(), view.getNameRec(), view.getPhoneSender(), view.getPhoneRec(), view.getEmailSender(), view.getEmailRec(), view.getDirectionSender(),
-         view.getDirectionRec(), view.getComboCitySender(), view.getComboCityRec(), view.getComboPackageSize(), view.getWeight());
-		JOptionPane.showMessageDialog(null, "The enrollment has been completed");
-	}
+		dto.addSendPackage(view.getIdSender(), view.getIdRec(), view.getDirectionSender(), view.getDirectionRec(), view.getComboCitySender(), view.getComboCityRec(), view.getWidth(), view.getHeight(), view.getLength(), view.getWeight(), view.getPrice());
+        JOptionPane.showMessageDialog(null, "Registration of the package has been completed");
+    }
 
 }

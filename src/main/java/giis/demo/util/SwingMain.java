@@ -8,8 +8,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import giis.demo.tkrun.*;
 import giis.demo.tkrun.DTOs.PackageDTO;
+import giis.demo.tkrun.DTOs.UserDTO;
 import giis.demo.tkrun.controller.PackageController;
+import giis.demo.tkrun.controller.UserController;
 import giis.demo.tkrun.view.PackageView;
+import giis.demo.tkrun.view.UserView;
 
 /**
  * Punto de entrada principal que incluye botones para la ejecucion de las pantallas 
@@ -56,13 +59,6 @@ public class SwingMain {
 		JButton btnRegister = new JButton("Register a package");
         btnRegister.addActionListener(new ActionListener() { //NOSONAR codigo autogenerado
             public void actionPerformed(ActionEvent e) {
-                /**
-                 * Creates a new instance of the PackageController class and initializes it with a PackageModel, PackageView, and the current SwingMain instance.
-                 * 
-                 * @param controller The PackageController instance to be created.
-                 * @param model The PackageModel instance to be associated with the controller.
-                 * @param view The PackageView instance to be associated with the controller.
-                 */
                 PackageController controller=new PackageController(new PackageDTO(), new PackageView(), SwingMain.this);
                 controller.initController();
             }
@@ -70,6 +66,15 @@ public class SwingMain {
 		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
 		frame.getContentPane().add(btnRegister);
 		
+		JButton btnRegisterUser = new JButton("Register a User");
+        btnRegisterUser.addActionListener(new ActionListener() { //NOSONAR codigo autogenerado
+            public void actionPerformed(ActionEvent e) {
+                UserController controller=new UserController(new UserDTO(), new UserView(), SwingMain.this);
+                controller.initController();
+            }
+        });
+		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
+		frame.getContentPane().add(btnRegisterUser);
 			
 		JButton btnInicializarBaseDeDatos = new JButton("Inicializar Base de Datos en Blanco");
 		btnInicializarBaseDeDatos.addActionListener(new ActionListener() { //NOSONAR codigo autogenerado
