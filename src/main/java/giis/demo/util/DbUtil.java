@@ -17,6 +17,7 @@ import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.ArrayListHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.MapListHandler;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
 
 /**
  * Metodos de utilidad para simplificar las queries realizadas en las clases 
@@ -91,6 +92,22 @@ public abstract class DbUtil {
 			DbUtils.closeQuietly(conn);
 		}
 	}
+
+
+	public <T> T executeQuerySingle(Class<T> pojoClass, String sql, Object... params) {
+		Connection conn = null;
+		try {
+			conn = this.getConnection();
+			ScalarHandler<T> scalarHandler = new ScalarHandler<>();
+			QueryRunner runner = new QueryRunner();
+			return runner.query(conn, sql, scalarHandler, params);
+		} catch (SQLException e) {
+			throw new UnexpectedException(e);
+		} finally {
+			DbUtils.closeQuietly(conn);
+		}
+	}
+
 	/**
 	 * Ejecuta una sentencia sql de actualizacion con los parametros especificados;
 	 * Utiliza apache commons-dbutils para manejar todos los aspectos de jdbc

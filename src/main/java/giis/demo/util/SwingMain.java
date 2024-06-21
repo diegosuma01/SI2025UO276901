@@ -6,12 +6,14 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import giis.demo.tkrun.*;
 import giis.demo.tkrun.DTOs.PackageDTO;
+import giis.demo.tkrun.DTOs.TransportDTO;
 import giis.demo.tkrun.DTOs.UserDTO;
 import giis.demo.tkrun.controller.PackageController;
+import giis.demo.tkrun.controller.TransportController;
 import giis.demo.tkrun.controller.UserController;
 import giis.demo.tkrun.view.PackageView;
+import giis.demo.tkrun.view.TransportView;
 import giis.demo.tkrun.view.UserView;
 
 /**
@@ -75,6 +77,16 @@ public class SwingMain {
         });
 		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
 		frame.getContentPane().add(btnRegisterUser);
+
+		JButton btnTransport = new JButton("Transport");
+        btnTransport.addActionListener(new ActionListener() { //NOSONAR codigo autogenerado
+            public void actionPerformed(ActionEvent e) {
+                TransportController controller=new TransportController(new TransportDTO(), new TransportView(), SwingMain.this);
+                controller.initController();
+            }
+        });
+		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
+		frame.getContentPane().add(btnTransport);
 			
 		JButton btnInicializarBaseDeDatos = new JButton("Inicializar Base de Datos en Blanco");
 		btnInicializarBaseDeDatos.addActionListener(new ActionListener() { //NOSONAR codigo autogenerado

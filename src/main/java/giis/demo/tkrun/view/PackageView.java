@@ -34,6 +34,7 @@ public class PackageView {
     private JLabel lblPrice;
     private JButton btnSend;
     private JButton btnPrice;
+    private double distance;
 
 
     /**
@@ -69,7 +70,7 @@ public class PackageView {
 
         final JLabel lblCitySender = new JLabel("City:");
         frame.getContentPane().add(lblCitySender);
-        comboCitySender = new JComboBox<>(new String[]{"Gijon", "Madrid", "Valencia", "Sevilla"});
+        comboCitySender = new JComboBox<>(new String[]{"Gijón", "Valencia","Madrid", "Sevilla"});
         frame.getContentPane().add(comboCitySender);
 
         final JLabel lblDirectionSender = new JLabel("Address:");
@@ -94,7 +95,7 @@ public class PackageView {
         
         final JLabel lblCityRec = new JLabel("City:");
         frame.getContentPane().add(lblCityRec);
-        comboCityRec = new JComboBox<>(new String[]{"Gijon", "Madrid", "Valencia", "Sevilla"});
+        comboCityRec = new JComboBox<>(new String[]{"Gijón", "Valencia","Madrid", "Sevilla"});
         frame.getContentPane().add(comboCityRec);
 
         final JLabel lblDirectionRec = new JLabel("Address:");
@@ -150,7 +151,6 @@ public class PackageView {
         frame.getContentPane().add(btnSend);
 
 
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
 
         // Add action listener for calculate price button
@@ -189,13 +189,19 @@ public class PackageView {
                 return;
             }
 
+            if (comboCitySender.getSelectedItem() == null || comboCityRec.getSelectedItem() == null) {
+                JOptionPane.showMessageDialog(null, "Please, select the cities to calculate the price.",
+                        "Ciudades no seleccionadas", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
             double length = Double.parseDouble(lengthText);
             double width = Double.parseDouble(widthText);
             double height = Double.parseDouble(heightText);
             double weight = Double.parseDouble(weightText);
 
             double price = calculatePrice(length, width, height, weight);
-            lblPrice.setText(String.format("$%.2f", price));
+            lblPrice.setText(String.format("%.2f€", price));
 
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(frame, "Invalid input. Please enter valid numbers.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -206,7 +212,9 @@ public class PackageView {
         // Implement your pricing logic here. For example:
         double volume = length * width * height;
         double basePrice = 5.0;
-        double price = basePrice + (volume * 0.01) + (weight * 0.5);
+        distance = getDistance();
+        double price = basePrice + (volume * 0.001) + (weight * 1.5) + (distance * 0.1);
+    
         return price;
     }
 
@@ -328,5 +336,13 @@ public class PackageView {
     }
     public void setBtnPrice(JButton btnPrice) {
         this.btnPrice = btnPrice;
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
     }
 }

@@ -71,7 +71,6 @@ public class UserView {
         btnRegister = new JButton("Register User");
         frame.getContentPane().add(btnRegister);
 
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
 

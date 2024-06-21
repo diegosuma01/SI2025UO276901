@@ -1,101 +1,116 @@
 -- Eliminación de tablas si existen
-DROP TABLE IF EXISTS Users;
-DROP TABLE IF EXISTS Packages;
-DROP TABLE IF EXISTS Offices;
-DROP TABLE IF EXISTS Warehouses;
-DROP TABLE IF EXISTS Vehicles;
-DROP TABLE IF EXISTS Routes;
-DROP TABLE IF EXISTS Shipments;
-DROP TABLE IF EXISTS Package_Tracking;
-DROP TABLE IF EXISTS Delivery_Attempts;
-DROP TABLE IF EXISTS Rates;
-DROP TABLE IF EXISTS Carreras;
+DROP TABLE IF EXISTS "Users";
+DROP TABLE IF EXISTS "Packages";
+DROP TABLE IF EXISTS "Offices";
+DROP TABLE IF EXISTS "Warehouses";
+DROP TABLE IF EXISTS "Vehicles";
+DROP TABLE IF EXISTS "Routes";
+DROP TABLE IF EXISTS "Shipments";
+DROP TABLE IF EXISTS "Package_Tracking";
+DROP TABLE IF EXISTS "Delivery_Attempts";
+DROP TABLE IF EXISTS "Rates";
+DROP TABLE IF EXISTS "Carreras";
+DROP TABLE IF EXISTS "City";
+DROP TABLE IF EXISTS "Waypoints";
 
--- Creación de la tabla de Usuarios
-CREATE TABLE Users (
-    user_id String PRIMARY KEY,
-    name VARCHAR(100),
-    email VARCHAR(100),
-    phone VARCHAR(15)
+CREATE TABLE IF NOT EXISTS "Users" (
+    "user_id" TEXT PRIMARY KEY,
+    "name" TEXT,
+    "email" TEXT,
+    "phone" TEXT
 );
 
--- Creación de la tabla de Paquetes con las 3 dimensiones
-CREATE TABLE Packages (
-    package_id INT AUTO_INCREMENT PRIMARY KEY,
-    sender_id VARCHAR(10),
-    receiver_id VARCHAR(10),
-    citySender VARCHAR(100),
-    addressSender TEXT,
-    cityRec VARCHAR(100),
-    addressRec TEXT,
-    weight DECIMAL(10, 2),
-    height DECIMAL(10, 2),
-    length DECIMAL(10, 2),
-    depth DECIMAL(10, 2),
-    status VARCHAR(50),
-    price INT,
-    FOREIGN KEY (sender_id) REFERENCES Users(user_id),
-    FOREIGN KEY (receiver_id) REFERENCES Users(user_id)
+CREATE TABLE IF NOT EXISTS "Packages" (
+    "package_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "sender_id" TEXT,
+    "receiver_id" TEXT,
+    "citySender" TEXT,
+    "addressSender" TEXT,
+    "cityRec" TEXT,
+    "addressRec" TEXT,
+    "weight" DECIMAL(10, 2),
+    "height" DECIMAL(10, 2),
+    "length" DECIMAL(10, 2),
+    "depth" DECIMAL(10, 2),
+    "status" TEXT,
+    "actual_location" INTEGER DEFAULT city,
+    "price" INTEGER,
+    FOREIGN KEY ("sender_id") REFERENCES "Users"("user_id"),
+    FOREIGN KEY ("receiver_id") REFERENCES "Users"("user_id"),
+    FOREIGN KEY ("actual_location") REFERENCES "City"("city_id")
+    FOREIGN KEY ("citySender") REFERENCES "City"("city"),
+    FOREIGN KEY ("cityRec") REFERENCES "City"("city")
 );
 
--- Creación de la tabla de Oficinas
-CREATE TABLE Offices (
-    office_id INT AUTO_INCREMENT PRIMARY KEY,
-    city VARCHAR(100),
-    address TEXT
+CREATE TABLE IF NOT EXISTS "Offices" (
+    "office_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "city_id" TEXT,
+    "address" TEXT,
+    FOREIGN KEY ("city_id") REFERENCES "City"("city_id")
 );
 
--- Creación de la tabla de Almacenes
-CREATE TABLE Warehouses (
-    warehouse_id INT AUTO_INCREMENT PRIMARY KEY,
-    city VARCHAR(100),
-    address TEXT
+CREATE TABLE IF NOT EXISTS "Warehouses" (
+    "warehouse_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "city_id" INTEGER,
+    "address" TEXT,
+    FOREIGN KEY ("city_id") REFERENCES "City"("city_id")
 );
 
--- Creación de la tabla de Vehículos
-CREATE TABLE Vehicles (
-    vehicle_id INT AUTO_INCREMENT PRIMARY KEY,
-    capacity DECIMAL(10, 2),
-    current_location VARCHAR(100)
+CREATE TABLE IF NOT EXISTS "Vehicles" (
+    "vehicle_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "capacity" DECIMAL(10, 2),
+    "current_location" TEXT
 );
 
--- Creación de la tabla de Rutas
-CREATE TABLE Routes (
-    route_id INT AUTO_INCREMENT PRIMARY KEY,
-    origin VARCHAR(100),
-    destination VARCHAR(100),
-    waypoints TEXT
+CREATE TABLE IF NOT EXISTS "City" (
+    "city_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "city" TEXT
 );
 
--- Creación de la tabla de Envios
-CREATE TABLE Shipments (
-    shipment_id INT AUTO_INCREMENT PRIMARY KEY,
-    package_id INT,
-    route_id INT,
-    vehicle_id INT,
-    pickup_date DATETIME,
-    delivery_date DATETIME,
-    FOREIGN KEY (package_id) REFERENCES Packages(package_id),
-    FOREIGN KEY (route_id) REFERENCES Routes(route_id),
-    FOREIGN KEY (vehicle_id) REFERENCES Vehicles(vehicle_id)
+CREATE TABLE IF NOT EXISTS "Waypoints" (
+    "waypoint_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "route_id" INTEGER,
+    "city_id" INTEGER,
+    FOREIGN KEY ("route_id") REFERENCES "Routes"("route_id"),
+    FOREIGN KEY ("city_id") REFERENCES "City"("city_id")
 );
 
--- Creación de la tabla de Seguimiento de Paquetes
-CREATE TABLE Package_Tracking (
-    tracking_id INT AUTO_INCREMENT PRIMARY KEY,
-    package_id INT,
-    location VARCHAR(100),
-    status VARCHAR(50),
-    timestamp DATETIME,
-    FOREIGN KEY (package_id) REFERENCES Packages(package_id)
+CREATE TABLE IF NOT EXISTS "Routes" (
+    "route_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "origin" INTEGER,
+    "destination" INTEGER,
+    "distance" INTEGER,
+    FOREIGN KEY ("origin") REFERENCES "City"("city_id"),
+    FOREIGN KEY ("destination") REFERENCES "City"("city_id")
 );
 
--- Creación de la tabla de Intentos de Entrega
-CREATE TABLE Delivery_Attempts (
-    attempt_id INT AUTO_INCREMENT PRIMARY KEY,
-    package_id INT,
-    attempt_number INT,
-    status VARCHAR(50),
-    timestamp DATETIME,
-    FOREIGN KEY (package_id) REFERENCES Packages(package_id)
+CREATE TABLE IF NOT EXISTS "Shipments" (
+    "shipment_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "package_id" INTEGER,
+    "route_id" INTEGER,
+    "vehicle_id" INTEGER,
+    "pickup_date" DATETIME,
+    "delivery_date" DATETIME,
+    FOREIGN KEY ("package_id") REFERENCES "Packages"("package_id"),
+    FOREIGN KEY ("route_id") REFERENCES "Routes"("route_id"),
+    FOREIGN KEY ("vehicle_id") REFERENCES "Vehicles"("vehicle_id")
 );
+
+CREATE TABLE IF NOT EXISTS "Package_Tracking" (
+    "tracking_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "package_id" INTEGER,
+    "location" TEXT,
+    "status" TEXT,
+    "timestamp" DATETIME,
+    FOREIGN KEY ("package_id") REFERENCES "Packages"("package_id")
+);
+
+CREATE TABLE IF NOT EXISTS "Delivery_Attempts" (
+    "attempt_id" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "package_id" INTEGER,
+    "attempt_number" INTEGER,
+    "status" TEXT,
+    "timestamp" DATETIME,
+    FOREIGN KEY ("package_id") REFERENCES "Packages"("package_id")
+);
+

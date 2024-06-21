@@ -11,7 +11,7 @@ public class PackageController {
 
     private PackageView view;
     private SwingMain main;
-    private PackageDTO dto;
+    private static PackageDTO dto;
     
 
     public PackageController(PackageDTO packageDTO, PackageView packageView, SwingMain swingMain) {
@@ -34,4 +34,9 @@ public class PackageController {
         JOptionPane.showMessageDialog(null, "Registration of the package has been completed");
     }
 
+    public void getDistance() {
+        String a = (String) view.getComboCitySender().getSelectedItem();
+        String b= (String) view.getComboCityRec().getSelectedItem();
+        view.setDistance(dto.getRouteDistance(a, b));
+    }
 }

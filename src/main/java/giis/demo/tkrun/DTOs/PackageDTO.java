@@ -1,15 +1,12 @@
 package giis.demo.tkrun.DTOs;
 
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.swing.JComboBox;
 
 import giis.demo.tkrun.model.UsersModel;
 import giis.demo.util.ApplicationException;
 import giis.demo.util.Database;
-import lombok.val;
 
 public class PackageDTO {
 
@@ -34,6 +31,29 @@ public class PackageDTO {
 			throw new ApplicationException(message);
 		}
 	}
+
+	public double getRouteDistance(String originCity, String destinationCity) {
+		// Si la ciudad de origen y destino son iguales, devolver 0
+		if (originCity.equals(destinationCity)) {
+			return 0.0;
+		}
+	
+		// Consulta SQL para obtener la distancia entre el origen y el destino
+		String sqlGetRouteDistance = 
+			"SELECT COALESCE(distance, 0) AS distance " +
+			"FROM Routes AS r " +
+			"INNER JOIN City AS c1 ON r.origin = c1.city_id " +
+			"INNER JOIN City AS c2 ON r.destination = c2.city_id " +
+			"WHERE c1.city = ? AND c2.city = ?";
+		
+		// Ejecutar la consulta y obtener la distancia
+		Double distance = db.executeQuerySingle(Double.class, sqlGetRouteDistance, originCity, destinationCity);
+		
+		// Devolver la distancia obtenida, o 0 si no se encontró ninguna ruta
+		return distance;
+	}
+	
+	
 	
 	public void addSendPackage(String idSender, String idRec, String directionSender, String directionRec,
 			JComboBox<String> comboCitySender, JComboBox<String> comboCityRec, String width, String height,
