@@ -1,81 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/diego/OneDrive/Documentos/GitHub/SI2023UO276901/DemoDB.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="1"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="125"/><column_width id="3" width="4234"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,8:mainPackages"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="City" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="68"/><column index="2" value="183"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Packages" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="108"/><column index="2" value="95"/><column index="3" value="105"/><column index="4" value="101"/><column index="5" value="137"/><column index="6" value="72"/><column index="7" value="109"/><column index="8" value="69"/><column index="9" value="65"/><column index="10" value="65"/><column index="11" value="60"/><column index="12" value="101"/><column index="13" value="142"/><column index="14" value="52"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">INSERT INTO &quot;Packages&quot; (&quot;sender_id&quot;, &quot;receiver_id&quot;, &quot;citySender&quot;, &quot;addressSender&quot;, &quot;cityRec&quot;, &quot;addressRec&quot;, &quot;weight&quot;, &quot;height&quot;, &quot;length&quot;, &quot;depth&quot;, &quot;status&quot;, &quot;actual_location&quot;, &quot;price&quot;) VALUES
-('u1', 'u2', 'Gijón', 'Calle A, 10', 'Valencia', 'Plaza B, 5', 2.5, 0.3, 0.4, 0.2, 'IN TRANSIT', 2, 100),
-('u3', 'u4', 'Madrid', 'Avenida C, 20', 'Sevilla', 'Calle D, 15', 1.8, 0.25, 0.35, 0.15, 'COMPLETED', 3, 80),
-('u1', 'u3', 'Gijón', 'Calle E, 11', 'Madrid', 'Calle F, 6', 3.2, 0.4, 0.5, 0.3, 'PENDING', 1, 120),
-('u2', 'u1', 'Valencia', 'Avenida G, 21', 'Gijón', 'Calle H, 12', 4.0, 0.45, 0.55, 0.35, 'DELIVERY', 2, 150),
-('u4', 'u2', 'Sevilla', 'Plaza I, 7', 'Valencia', 'Avenida J, 8', 2.0, 0.3, 0.4, 0.25, 'IN TRANSIT', 4, 90),
-('u3', 'u1', 'Madrid', 'Calle K, 14', 'Gijón', 'Calle L, 13', 3.5, 0.35, 0.45, 0.3, 'COMPLETED', 3, 110),
-('u4', 'u3', 'Sevilla', 'Avenida M, 18', 'Madrid', 'Plaza N, 20', 2.8, 0.32, 0.42, 0.28, 'PENDING', 4, 100),
-('u1', 'u4', 'Gijón', 'Calle O, 25', 'Sevilla', 'Avenida P, 30', 3.0, 0.4, 0.5, 0.3, 'DELIVERY', 1, 130),
-('u2', 'u3', 'Valencia', 'Plaza Q, 35', 'Madrid', 'Calle R, 40', 3.8, 0.42, 0.52, 0.35, 'IN TRANSIT', 2, 140),
-('u3', 'u2', 'Madrid', 'Calle S, 45', 'Valencia', 'Avenida T, 50', 2.2, 0.3, 0.4, 0.25, 'PENDING', 3, 95);</sql><sql name="SQL 2">Select package_id packageId, sender_id senderId, receiver_id receiverId,citySender, addressSender adressSender, cityRec cityReceiver, addressRec adressReceiver, status from packages WHERE actual_location in (Select w3.city_id from routes w1 inner join waypoints as w2 on w1.route_id = w2.route_id inner join city AS w3 ON w2.city_id = w3.city_id WHERE w2.route_id = w1.route_id AND w1.route_id = ?)</sql><sql name="SQL 3">SELECT * FROM routes</sql><sql name="SQL 4">SELECT p.package_id AS packageId, 
-       p.sender_id AS senderId, 
-       p.receiver_id AS receiverId, 
-       p.citySender, 
-       p.addressSender AS adressSender, 
-       p.cityRec AS cityReceiver, 
-       p.addressRec AS adressReceiver, 
-       p.status 
-FROM Packages p
-INNER JOIN city c ON p.citySender = c.city
-INNER JOIN Routes r ON r.origin = c.city_id
-WHERE r.origin = 2;
-
-
-
-
-</sql><sql name="SQL 5">SELECT p.package_id AS packageId, 
-       (SELECT city FROM City WHERE city_id = p.citySender) AS senderCity, 
-       (SELECT city FROM City WHERE city_id = p.cityRec) AS receiverCity, 
-       p.citySender, 
-       p.addressSender AS adressSender, 
-       p.cityRec AS cityReceiver, 
-       p.addressRec AS adressReceiver, 
-       p.status 
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="C:/Users/diego/OneDrive/Documentos/GitHub/SI2023UO276901/DemoDB.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="125"/><column_width id="3" width="4883"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,8:mainPackages"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="City" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="68"/><column index="2" value="183"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Delivery_Attempts" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="105"/><column index="2" value="108"/><column index="3" value="155"/><column index="4" value="63"/><column index="5" value="162"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Package_Tracking" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="107"/><column index="2" value="108"/><column index="3" value="79"/><column index="4" value="180"/><column index="5" value="162"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Packages" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="108"/><column index="2" value="101"/><column index="3" value="137"/><column index="4" value="137"/><column index="5" value="112"/><column index="6" value="69"/><column index="7" value="65"/><column index="8" value="65"/><column index="9" value="60"/><column index="10" value="180"/><column index="11" value="142"/><column index="12" value="57"/><column index="13" value="126"/><column index="14" value="152"/><column index="15" value="133"/><column index="16" value="94"/><column index="17" value="137"/><column index="18" value="101"/></column_widths><filter_values><column index="11" value="3"/></filter_values><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Routes" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="83"/><column index="2" value="60"/><column index="3" value="107"/><column index="4" value="82"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Waypoints" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_"><sort/><column_widths><column index="1" value="117"/><column index="2" value="83"/><column index="3" value="68"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">SELECT p.package_id AS packageId,  p.citySender, p.cityRec, p.status, c.city as actual_location
 FROM Packages p 
-INNER JOIN Routes r ON r.route_id = p.actual_location 
-WHERE r.origin = 1;
-</sql><sql name="SQL 6">SELECT p.package_id AS packageId, 
-       (SELECT c.city FROM City c WHERE c.city_id = p.citySender) AS senderCity, 
-       (SELECT c.city FROM City c WHERE c.city_id = p.cityRec) AS receiverCity, 
-       p.citySender, 
-       p.addressSender AS adressSender, 
-       p.cityRec AS cityReceiver, 
-       p.addressRec AS adressReceiver, 
-       p.status 
-FROM Packages p 
-INNER JOIN Routes r ON r.origin = p.citySender 
-WHERE r.route_id = 1;
+INNER JOIN city c ON p.actual_location = c.city_id 
+INNER JOIN city c2 ON p.cityRec = c2.city 
+WHERE c.city = 'Madrid' and c.city != p.cityRec and ('Valencia' = c2.city or 'Valencia' in ( )) ;
 
-</sql><sql name="SQL 7">CREATE TABLE IF NOT EXISTS &quot;Packages&quot; (
-    &quot;package_id&quot; INTEGER PRIMARY KEY AUTOINCREMENT,
-    &quot;sender_id&quot; TEXT,
-    &quot;receiver_id&quot; TEXT,
-    &quot;citySender&quot; TEXT,
-    &quot;addressSender&quot; TEXT,
-    &quot;cityRec&quot; TEXT,
-    &quot;addressRec&quot; TEXT,
-    &quot;weight&quot; DECIMAL(10, 2),
-    &quot;height&quot; DECIMAL(10, 2),
-    &quot;length&quot; DECIMAL(10, 2),
-    &quot;depth&quot; DECIMAL(10, 2),
-    &quot;status&quot; TEXT,
-    &quot;actual_location&quot; INTEGER DEFAULT city,
-    &quot;price&quot; INTEGER,
-    FOREIGN KEY (&quot;sender_id&quot;) REFERENCES &quot;Users&quot;(&quot;user_id&quot;),
-    FOREIGN KEY (&quot;receiver_id&quot;) REFERENCES &quot;Users&quot;(&quot;user_id&quot;),
-    FOREIGN KEY (&quot;actual_location&quot;) REFERENCES &quot;City&quot;(&quot;city_id&quot;)
-    FOREIGN KEY (&quot;citySender&quot;) REFERENCES &quot;City&quot;(&quot;city&quot;),
-    FOREIGN KEY (&quot;cityRec&quot;) REFERENCES &quot;City&quot;(&quot;city&quot;)
-);</sql><sql name="SQL 8">SELECT 
-    r.route_id AS routeId, 
-    (SELECT city FROM City WHERE city_id = r.origin) AS originCity,
-    (SELECT city FROM City WHERE city_id = r.destination) AS destinationCity,
-    (SELECT GROUP_CONCAT(w3.city, ', ')  
-     FROM waypoints AS w2 
-     INNER JOIN City AS w3 ON w2.city_id = w3.city_id 
-     WHERE w2.route_id = r.route_id
-    ) AS waypointsTable 
-FROM routes AS r;
+--select * from routes r, Waypoints w, city c, packages p where r.route_id = w.route_id and c.city;--and p.citySender = r.origin --and p.cityRec = r.destination 
+--and (destination = 2 or city_id  = 2)
 
-</sql><current_tab id="7"/></tab_sql></sqlb_project>
+select DISTINCT p.package_id AS packageId,  p.citySender, p.cityRec, p.status,actual_location from routes r inner join waypoints w on r.route_id = w.route_id inner join city co on co.city_id = origin inner join city cd on cd.city_id = destination inner join Packages p on p.citySender = co.city and p.cityRec = cd.city
+where destination = 2 or w.city_id = 2</sql><current_tab id="0"/></tab_sql></sqlb_project>

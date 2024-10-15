@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.swing.JComboBox;
 
-import giis.demo.tkrun.model.UsersModel;
+import giis.demo.tkrun.model.PackageModel;
 import giis.demo.util.ApplicationException;
 import giis.demo.util.Database;
 
@@ -20,44 +20,12 @@ public class PackageDTO {
 		if (obj==null)
 			throw new ApplicationException(message);
 	}
-
-	private void validateId(String id, String message) {
-		validateNotNull(id, MSG_FILL_DATA);
-		String sqlIdExistSend = 
-				"SELECT user_id userId FROM USERS WHERE user_ID = ?";
-
-		List<UsersModel> listUsers = db.executeQueryPojo(UsersModel.class, sqlIdExistSend, id);
-		if (listUsers.isEmpty()) {
-			throw new ApplicationException(message);
-		}
-	}
-
-	public double getRouteDistance(String originCity, String destinationCity) {
-		// Si la ciudad de origen y destino son iguales, devolver 0
-		if (originCity.equals(destinationCity)) {
-			return 0.0;
-		}
-	
-		// Consulta SQL para obtener la distancia entre el origen y el destino
-		String sqlGetRouteDistance = 
-			"SELECT COALESCE(distance, 0) AS distance " +
-			"FROM Routes AS r " +
-			"INNER JOIN City AS c1 ON r.origin = c1.city_id " +
-			"INNER JOIN City AS c2 ON r.destination = c2.city_id " +
-			"WHERE c1.city = ? AND c2.city = ?";
-		
-		// Ejecutar la consulta y obtener la distancia
-		Double distance = db.executeQuerySingle(Double.class, sqlGetRouteDistance, originCity, destinationCity);
-		
-		// Devolver la distancia obtenida, o 0 si no se encontró ninguna ruta
-		return distance;
-	}
 	
 	
-	
-	public void addSendPackage(String idSender, String idRec, String directionSender, String directionRec,
+	public void addSendPackage(String directionSender, String directionRec,
 			JComboBox<String> comboCitySender, JComboBox<String> comboCityRec, String width, String height,
-			String length, String weight, String price) {
+			String length, String weight, String price,String nameSender, String emailSender, String phoneSender, 
+			String nameRec, String emailRec, String phoneRec) {
 				validateNotNull(directionSender, MSG_FILL_DATA);
 				validateNotNull(directionRec, MSG_FILL_DATA);
 				validateNotNull(width, MSG_FILL_DATA);
@@ -65,15 +33,44 @@ public class PackageDTO {
 				validateNotNull(length, MSG_FILL_DATA);
 				validateNotNull(weight, MSG_FILL_DATA);
 				validateNotNull(price, MSG_FILL_DATA);
-				validateId(idSender, MSG_USER_NOT_EXIST);
-				validateId(idRec, MSG_USER_NOT_EXIST);
 
-				String sqlInsertPackage = "INSERT INTO PACKAGES (SENDER_ID, RECEIVER_ID, CITYSENDER, CITYREC," + 
-						"ADDRESSSENDER, ADDRESSREC, WEIGHT, HEIGHT, LENGTH, DEPTH, STATUS, PRICE) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
-				db.executeUpdate(sqlInsertPackage, idSender, idRec, comboCitySender.getSelectedItem(), comboCityRec.getSelectedItem(),
-						directionSender, directionRec, weight, height, length, width, "PENDING", price);
+				String sqlInsertPackage = "INSERT INTO PACKAGES (CITYSENDER, CITYREC," + 
+						"ADDRESSSENDER, ADDRESSREC, WEIGHT, HEIGHT, LENGTH, DEPTH, STATUS, PRICE," +
+						"NAME_SENDER, EMAIL_SENDER, PHONE_SENDER, NAME_REC, EMAIL_REC, PHONE_REC) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				db.executeUpdate(sqlInsertPackage, comboCitySender.getSelectedItem(), comboCityRec.getSelectedItem(),
+						directionSender, directionRec, weight, height, length, width, "REGISTERED", price, nameSender, emailSender, phoneSender, nameRec, emailRec, phoneRec);
 
 
+	}
+
+	public List<PackageModel> getPackagesOffice(String lastSelectedKey){
+        String sqlGetPackages = "SELECT package_id as packageId, name_sender, name_rec, citySender, addressSender as adressSender, cityRec as cityReceiver, addressRec as adressReceiver, status FROM Packages INNER JOIN CITY C ON ACTUAL_LOCATION = CITY_ID WHERE C.CITY = ? and status = 'READY FOR DELIVERY'";
+        return db.executeQueryPojo(PackageModel.class, sqlGetPackages, lastSelectedKey);
+    } 
+
+	public List<PackageModel> getPackagesVehicle(String vehicle){
+        String sqlGetPackages = "SELECT p.package_id as packageId, name_sender, name_rec, citySender, addressSender as adressSender, cityRec as cityReceiver, addressRec as adressReceiver, status FROM Packages p INNER JOIN shipments s on p.package_id = s.package_id WHERE status = 'DELIVERING' and s.vehicle_id = ?";
+        return db.executeQueryPojo(PackageModel.class, sqlGetPackages, vehicle);
+    }
+	
+	public void addTracking(String object) {
+		validateNotNull(object, MSG_FILL_DATA);
+		String Id_sql = "Select MAX(package_id) from Packages";
+		Integer id = db.executeQuerySingle(Integer.class, Id_sql) + 1;
+		String sqlPackageTracking = "INSERT INTO PACKAGE_TRACKING (PACKAGE_ID, LOCATION, STATUS, TIMESTAMP) VALUES (?, ?, 'REGISTERED', CURRENT_TIMESTAMP)";
+		db.executeUpdate(sqlPackageTracking, id, object);
+	}
+
+	public Integer getRouteDistance(String citySender, String cityRec) {
+		if (citySender.equals(cityRec)) {
+			return 0;
+
+		} else{
+			String query = "SELECT DISTANCE FROM ROUTES inner join city c on c.city_id  = origin inner join city c2 on c2.city_id = destination WHERE c.city = ? AND c2.city = ?";
+			return db.executeQuerySingle(Integer.class, query, citySender, cityRec);
+		}
+		
+		
 	}
     
 }

@@ -18,11 +18,15 @@ public class PackageView {
     private JFrame frame;
 
     private JTextField txtIdSender;
+    private JTextField txtphoneSender;
+    private JTextField txtemailSender;
 
     private JTextField txtDirectionSender;
     private JComboBox<String> comboCitySender;
 
     private JTextField txtIdRec;
+    private JTextField txtphoneRec;
+    private JTextField txtemailRec;
 
     private JTextField txtDirectionRec;
     private JComboBox<String> comboCityRec;
@@ -37,16 +41,10 @@ public class PackageView {
     private double distance;
 
 
-    /**
-     * Create the application.
-     */
     public PackageView() {
         initialize();
     }
-
-    /**
-     * Initialize the contents of the frame.
-     */
+        
     private void initialize() {
         frame = new JFrame();
         frame.setTitle("Register a package");
@@ -59,12 +57,26 @@ public class PackageView {
         frame.getContentPane().add(lblSenderInfo);
         frame.getContentPane().add(new JLabel("")); // Empty placeholder for alignment
 
-        final JLabel lblIdSender = new JLabel("ID:");
+        final JLabel lblIdSender = new JLabel("Name Sender:");
         frame.getContentPane().add(lblIdSender);
         txtIdSender = new JTextField();
         txtIdSender.setName("txtIdSender");
         frame.getContentPane().add(txtIdSender);
         txtIdSender.setColumns(10);
+
+        final JLabel lblphonesender = new JLabel("Phone Sender:");
+        frame.getContentPane().add(lblphonesender);
+        txtphoneSender = new JTextField();
+        txtphoneSender.setName("txtphoneSender");
+        frame.getContentPane().add(txtphoneSender);
+        txtphoneSender.setColumns(10);
+
+        final JLabel lblemailsender = new JLabel("Email sender:");
+        frame.getContentPane().add(lblemailsender);
+        txtemailSender = new JTextField();
+        txtIdSender.setName("txtemailSender");
+        frame.getContentPane().add(txtemailSender);
+        txtemailSender.setColumns(10);
 
     
 
@@ -85,12 +97,26 @@ public class PackageView {
         frame.getContentPane().add(lblRecInfo);
         frame.getContentPane().add(new JLabel("")); // Empty placeholder for alignment
 
-        final JLabel lblIdRec = new JLabel("ID:");
+        final JLabel lblIdRec = new JLabel("Name Recipient:");
         frame.getContentPane().add(lblIdRec);
         txtIdRec = new JTextField();
         txtIdRec.setName("txtIdRec");
         frame.getContentPane().add(txtIdRec);
         txtIdRec.setColumns(10);
+
+        final JLabel lblphonerec = new JLabel("Phone Recipient:");
+        frame.getContentPane().add(lblphonerec);
+        txtphoneRec = new JTextField();
+        txtphoneRec.setName("txtphoneRec");
+        frame.getContentPane().add(txtphoneRec);
+        txtphoneRec.setColumns(10);
+
+        final JLabel lblemailRec = new JLabel("Email Recipient:");
+        frame.getContentPane().add(lblemailRec);
+        txtemailRec = new JTextField();
+        txtemailRec.setName("txtemailRec");
+        frame.getContentPane().add(txtemailRec);
+        txtemailRec.setColumns(10);
 
         
         final JLabel lblCityRec = new JLabel("City:");
@@ -152,71 +178,85 @@ public class PackageView {
 
 
         frame.setVisible(true);
-
-        // Add action listener for calculate price button
-        btnPrice.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                calculatePrice();
-            }
-        });
     }
 
-    private void calculatePrice() {
+
+    public boolean validateFields() {
+        String idSender = getIdSender();
+        String idRec = getIdRec();
+        String phoneSender = getPhoneSender();
+        String phoneRec = getPhoneRec();
+        String emailSender = getEmailSender();
+        String emailRec = getEmailRec();
+        String directionSender = getDirectionSender();
+        String directionRec = getDirectionRec();
+        String weight = getWeight();
+        String length = getLength();
+        String width = getWidth();
+        String height = getHeight();
+    
+        // Validate that all fields are filled
+        if (idSender == null || idRec == null || phoneSender == null || phoneRec == null || 
+            emailSender == null || emailRec == null || directionSender == null || 
+            directionRec == null || weight == null || length == null || 
+            width == null || height == null) {
+            JOptionPane.showMessageDialog(getFrame(), "Please complete all fields.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+    
+        // Validate phone number (must be exactly 9 digits)
+        if (!phoneSender.matches("\\d{9}")) {
+            JOptionPane.showMessageDialog(getFrame(), "Sender's phone number must have exactly 9 digits.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        
+        if (!phoneRec.matches("\\d{9}")) {
+            JOptionPane.showMessageDialog(getFrame(), "Recipient's phone number must have exactly 9 digits.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+    
+        // Validate email
+        String emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
+        if (!emailSender.matches(emailRegex)) {
+            JOptionPane.showMessageDialog(getFrame(), "Sender's email address is not valid.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        
+        if (!emailRec.matches(emailRegex)) {
+            JOptionPane.showMessageDialog(getFrame(), "Recipient's email address is not valid.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+    
+        // Validate that weight and dimensions are valid numbers
         try {
-            String lengthText = txtLength.getText();
-            String widthText = txtWidth.getText();
-            String heightText = txtHeight.getText();
-            String weightText = txtWeight.getText();
+            Double.parseDouble(weight);
+            Double.parseDouble(length);
+            Double.parseDouble(width);
+            Double.parseDouble(height);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(getFrame(), "Please enter valid numeric values for weight and dimensions.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+    
+        // If all validations are correct
+        return true;
+    }
+    
 
-            if (lengthText.isEmpty()) {
-                JOptionPane.showMessageDialog(frame, "Length is empty", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+    private void showMessage(String message) {
+        JOptionPane.showMessageDialog(frame, message, "Input Error", JOptionPane.ERROR_MESSAGE);
+    }
 
-            if (widthText.isEmpty()) {
-                JOptionPane.showMessageDialog(frame, "Width is empty", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            if (heightText.isEmpty()) {
-                JOptionPane.showMessageDialog(frame, "Height is empty", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            if (weightText.isEmpty()) {
-                JOptionPane.showMessageDialog(frame, "Weight is empty", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            if (comboCitySender.getSelectedItem() == null || comboCityRec.getSelectedItem() == null) {
-                JOptionPane.showMessageDialog(null, "Please, select the cities to calculate the price.",
-                        "Ciudades no seleccionadas", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-
-            double length = Double.parseDouble(lengthText);
-            double width = Double.parseDouble(widthText);
-            double height = Double.parseDouble(heightText);
-            double weight = Double.parseDouble(weightText);
-
-            double price = calculatePrice(length, width, height, weight);
-            lblPrice.setText(String.format("%.2f€", price));
-
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(frame, "Invalid input. Please enter valid numbers.", "Error", JOptionPane.ERROR_MESSAGE);
+    private boolean isNumeric(String str) {
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
         }
     }
 
-    private double calculatePrice(double length, double width, double height, double weight) {
-        // Implement your pricing logic here. For example:
-        double volume = length * width * height;
-        double basePrice = 5.0;
-        distance = getDistance();
-        double price = basePrice + (volume * 0.001) + (weight * 1.5) + (distance * 0.1);
     
-        return price;
-    }
 
     public JFrame getFrame() {
         return this.frame;
@@ -345,4 +385,105 @@ public class PackageView {
     public void setDistance(double distance) {
         this.distance = distance;
     }
+
+    public JTextField getTxtphoneSender() {
+        return txtphoneSender;
+    }
+
+    public void setTxtphoneSender(JTextField txtphoneSender) {
+        this.txtphoneSender = txtphoneSender;
+    }
+
+    public String getEmailSender() {
+        if (this.txtemailSender.getText().isEmpty())
+            return null;
+        else
+            return this.txtemailSender.getText();
+    }
+    public void setEmailSender(String id) {
+        this.txtemailSender.setText(id);
+    }
+
+    public String getEmailRec() {
+        if (this.txtemailRec.getText().isEmpty())
+            return null;
+        else
+            return this.txtemailRec.getText();
+    }
+    public void setEmailRec(String id) {
+        this.txtemailRec.setText(id);
+    }
+
+    public String getPhoneSender() {
+        if (this.txtphoneSender.getText().isEmpty())
+            return null;
+        else
+            return this.txtphoneSender.getText();
+    }
+    public void setPhoneSender(String id) {
+        this.txtphoneSender.setText(id);
+    }
+
+    public String getPhoneRec() {
+        if (this.txtphoneRec.getText().isEmpty())
+            return null;
+        else
+            return this.txtphoneSender.getText();
+    }
+    public void setPhoneRec(String id) {
+        this.txtphoneRec.setText(id);
+    }
+
+    public JTextField getTxtphoneRec() {
+        return txtphoneRec;
+    }
+
+    public void setTxtphoneRec(JTextField txtphoneRec) {
+        this.txtphoneRec = txtphoneRec;
+    }
+
+    public JTextField getTxtemailRec() {
+        return txtemailRec;
+    }
+
+    public void setTxtemailRec(JTextField txtemailRec) {
+        this.txtemailRec = txtemailRec;
+    }
+
+    public JTextField getTxtIdSender() {
+        return txtIdSender;
+    }
+
+    public void setTxtIdSender(JTextField txtIdSender) {
+        this.txtIdSender = txtIdSender;
+    }
+
+    public JTextField getTxtIdRec() {
+        return txtIdRec;
+    }
+
+    public void setTxtIdRec(JTextField txtIdRec) {
+        this.txtIdRec = txtIdRec;
+    }
+
+    public JTextField getTxtDirectionSender() {
+        return txtDirectionSender;
+    }
+
+    public void setTxtDirectionSender(JTextField txtDirectionSender) {
+        this.txtDirectionSender = txtDirectionSender;
+    }
+
+    public JTextField getTxtDirectionRec() {
+        return txtDirectionRec;
+    }
+
+    public void setTxtDirectionRec(JTextField txtDirectionRec) {
+        this.txtDirectionRec = txtDirectionRec;
+    }
+
+    public JLabel getLblPrice(){
+        return lblPrice;
+    }
+
 }

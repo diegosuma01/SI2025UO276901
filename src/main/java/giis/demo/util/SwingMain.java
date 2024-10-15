@@ -1,113 +1,146 @@
 package giis.demo.util;
 
-import java.awt.EventQueue;
-import javax.swing.JFrame;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
+import java.awt.*;
+import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+
+import giis.demo.tkrun.DTOs.DeliverDTO;
+import giis.demo.tkrun.DTOs.LoadDTO;
 import giis.demo.tkrun.DTOs.PackageDTO;
 import giis.demo.tkrun.DTOs.TransportDTO;
-import giis.demo.tkrun.DTOs.UserDTO;
+import giis.demo.tkrun.DTOs.PickDTO;
+import giis.demo.tkrun.DTOs.TrackDTO;
+import giis.demo.tkrun.controller.DeliverController;
+import giis.demo.tkrun.controller.LoadController;
 import giis.demo.tkrun.controller.PackageController;
 import giis.demo.tkrun.controller.TransportController;
-import giis.demo.tkrun.controller.UserController;
+import giis.demo.tkrun.controller.PickController;
+import giis.demo.tkrun.controller.TrackController;
+import giis.demo.tkrun.view.DeliverView;
+import giis.demo.tkrun.view.LoadView;
 import giis.demo.tkrun.view.PackageView;
 import giis.demo.tkrun.view.TransportView;
-import giis.demo.tkrun.view.UserView;
+import giis.demo.tkrun.view.PickView;
+import giis.demo.tkrun.view.TrackView;
 
-/**
- * Punto de entrada principal que incluye botones para la ejecucion de las pantallas 
- * de las aplicaciones de ejemplo
- * y acciones de inicializacion de la base de datos.
- * No sigue MVC pues es solamente temporal para que durante el desarrollo se tenga posibilidad
- * de realizar acciones de inicializacion
- */
 public class SwingMain {
 
-	private JFrame frame;
+    private JFrame frame;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() { //NOSONAR codigo autogenerado
-			public void run() {
-				try {
-					SwingMain window = new SwingMain();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace(); //NOSONAR codigo autogenerado
-				}
-			}
-		});
-	}
-
-	/**
-	 * Create the application.
-	 */
-	public SwingMain() {
-		initialize();
-	}
-
-	/**
-	 * Initialize the contents of the frame.
-	 */
-	private void initialize() {
-		frame = new JFrame();
-		frame.setTitle("Main");
-		frame.setBounds(0, 0, 287, 185);
-		
-		JButton btnRegister = new JButton("Register a package");
-        btnRegister.addActionListener(new ActionListener() { //NOSONAR codigo autogenerado
-            public void actionPerformed(ActionEvent e) {
-                PackageController controller=new PackageController(new PackageDTO(), new PackageView(), SwingMain.this);
-                controller.initController();
+    public static void main(String[] args) {
+        EventQueue.invokeLater(new Runnable() { //NOSONAR codigo autogenerado
+            public void run() {
+                try {
+                    SwingMain window = new SwingMain();
+                    window.frame.setVisible(true);
+                } catch (Exception e) {
+                    e.printStackTrace(); //NOSONAR codigo autogenerado
+                }
             }
         });
-		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
-		frame.getContentPane().add(btnRegister);
-		
-		JButton btnRegisterUser = new JButton("Register a User");
-        btnRegisterUser.addActionListener(new ActionListener() { //NOSONAR codigo autogenerado
-            public void actionPerformed(ActionEvent e) {
-                UserController controller=new UserController(new UserDTO(), new UserView(), SwingMain.this);
-                controller.initController();
-            }
-        });
-		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
-		frame.getContentPane().add(btnRegisterUser);
+    }
 
-		JButton btnTransport = new JButton("Transport");
-        btnTransport.addActionListener(new ActionListener() { //NOSONAR codigo autogenerado
-            public void actionPerformed(ActionEvent e) {
-                TransportController controller=new TransportController(new TransportDTO(), new TransportView(), SwingMain.this);
-                controller.initController();
-            }
-        });
-		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
-		frame.getContentPane().add(btnTransport);
-			
-		JButton btnInicializarBaseDeDatos = new JButton("Inicializar Base de Datos en Blanco");
-		btnInicializarBaseDeDatos.addActionListener(new ActionListener() { //NOSONAR codigo autogenerado
-			public void actionPerformed(ActionEvent e) {
-				Database db=new Database();
-				db.createDatabase(false);
-			}
-		});
-		frame.getContentPane().add(btnInicializarBaseDeDatos);
-			
-		JButton btnCargarDatosIniciales = new JButton("Cargar Datos Iniciales para Pruebas");
-		btnCargarDatosIniciales.addActionListener(new ActionListener() { //NOSONAR codigo autogenerado
-			public void actionPerformed(ActionEvent e) {
-				Database db=new Database();
-				db.createDatabase(false);
-				db.loadDatabase();
-			}
-		});
-		frame.getContentPane().add(btnCargarDatosIniciales);
-	}
+    public SwingMain() {
+        initialize();
+    }
 
-	public JFrame getFrame() { return this.frame; }
-	
+    private void initialize() {
+        frame = new JFrame();
+        frame.setTitle("Main");
+        frame.setBounds(100, 100, 600, 400); // Pantalla más grande
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null); // Centrar la ventana en la pantalla
+        frame.getContentPane().setLayout(new GridBagLayout());
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 10); // Margen entre los botones
+
+        JButton btnRegister = createButton("Register a package", e -> {
+            PackageController controller = new PackageController(new PackageDTO(), new PackageView(), SwingMain.this);
+            controller.initController();
+        });
+        JButton btnPick = createButton("Pick Up a package", e -> {
+            PickController controller = new PickController(new PickDTO(), new PickView(), SwingMain.this, new TrackDTO());
+            controller.initController();
+        });
+        JButton btnTransport = createButton("Move a package", e -> {
+            TransportController controller = new TransportController(new TransportDTO(), new TransportView(), SwingMain.this);
+            controller.initController();
+        });
+        JButton btnTrack = createButton("Track a package", e -> {
+            TrackController controller = new TrackController(new TrackDTO(), new TrackView(), SwingMain.this);
+            controller.initController();
+        });
+        JButton btnDeliver = createButton("Deliver a package", e -> {
+            DeliverController controller = new DeliverController(new DeliverDTO(), new DeliverView(), SwingMain.this);
+            controller.initController();
+        });
+        JButton btnLoad = createButton("Load a package", e -> {
+            LoadController controller = new LoadController(new LoadDTO(), new LoadView(), SwingMain.this, new PackageDTO());
+            controller.initController();
+        });
+
+        JButton btnInicializarBaseDeDatos = createButton("Inicializar Base de Datos en Blanco", e -> {
+            Database db = new Database();
+            db.createDatabase(false);
+        });
+        JButton btnCargarDatosIniciales = createButton("Cargar Datos Iniciales para Pruebas", e -> {
+            Database db = new Database();
+            db.createDatabase(false);
+            db.loadDatabase();
+        });
+
+        // Colocamos los botones en 2 columnas
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        frame.getContentPane().add(btnRegister, gbc);
+
+        gbc.gridx = 1;
+        frame.getContentPane().add(btnPick, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        frame.getContentPane().add(btnTransport, gbc);
+
+        gbc.gridx = 1;
+        frame.getContentPane().add(btnTrack, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        frame.getContentPane().add(btnDeliver, gbc);
+
+        gbc.gridx = 1;
+        frame.getContentPane().add(btnLoad, gbc);
+
+        // Los botones de la base de datos ocupan toda la fila
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2; // Ocupa las dos columnas
+        frame.getContentPane().add(btnInicializarBaseDeDatos, gbc);
+
+        gbc.gridy = 4;
+        frame.getContentPane().add(btnCargarDatosIniciales, gbc);
+    }
+
+    // Método para crear botones con forma redondeada
+    private JButton createButton(String text, ActionListener actionListener) {
+        JButton button = new JButton(text);
+        button.addActionListener(actionListener);
+        button.setFocusPainted(false);
+        button.setBackground(new Color(70, 130, 180)); // Color azul
+        button.setForeground(Color.WHITE);
+        button.setBorder(BorderFactory.createLineBorder(new Color(70, 130, 180), 1));
+        button.setPreferredSize(new Dimension(200, 40)); // Tamaño de los botones
+        button.setFont(new Font("Arial", Font.BOLD, 12));
+        button.setOpaque(true);
+        button.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Borde interno para redondeado
+        return button;
+    }
+
+    public JFrame getFrame() {
+        return this.frame;
+    }
 }
+

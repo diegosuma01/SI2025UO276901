@@ -36,7 +36,7 @@ public class TransportDTO {
     }
 
     public List<PackageModel> getPackages(String lastSelectedKey){
-        String sqlGetPackages = "SELECT DISTINCT p.package_id AS packageId, u1.name AS senderName, u2.name AS receiverName, p.citySender, p.addressSender AS adressSender, p.cityRec AS cityReceiver, p.addressRec AS adressReceiver, p.status FROM Packages p INNER JOIN Users u1 ON p.sender_id = u1.user_id INNER JOIN Users u2 ON p.receiver_id = u2.user_id INNER JOIN City c ON p.citySender = c.city INNER JOIN Routes r ON r.origin = c.city_id WHERE r.origin = ? AND p.status = 'PENDING'";
+        String sqlGetPackages = "SELECT DISTINCT p.package_id AS packageId, u1.name AS senderName, u2.name AS receiverName, p.citySender, p.addressSender AS adressSender, p.cityRec AS cityReceiver, p.addressRec AS adressReceiver, p.status FROM Packages p INNER JOIN Users u1 ON p.sender_id = u1.user_id INNER JOIN Users u2 ON p.receiver_id = u2.user_id INNER JOIN City c ON p.citySender = c.city INNER JOIN Routes r ON r.origin = c.city_id WHERE r.origin = ? AND p.status = 'REGISTERED'";
         return db.executeQueryPojo(PackageModel.class, sqlGetPackages, lastSelectedKey);
     }
 
@@ -44,7 +44,7 @@ public class TransportDTO {
     private void validatePackage(String packageId) {
         String sql = "SELECT status FROM Packages WHERE package_id = ?";
         String status = db.executeQuerySingle(String.class, sql, packageId);
-        if (status == null || !status.equals("PENDING")) {
+        if (status == null || !status.equals("REGISTERED")) {
             throw new ApplicationException(MSG_INVALID_PACKAGE);
         }
     }
@@ -134,6 +134,78 @@ public class TransportDTO {
         LocalDate deliveryDate = shipment.getDeliveryDate();
         db.executeUpdate(sql, shipment.getPackageId(), shipment.getRouteId(), shipment.getVehicleId(),
                                 java.sql.Date.valueOf(pickUpDate), java.sql.Date.valueOf(deliveryDate)); 
+    }
+
+    public List<String> getVehicles(String lastSelectedKey) {
+        String query = "SELECT VEHICLE_ID FROM VEHICLES WHERE CURRENT_LOCATION = ? and type = 'T'";
+    
+        // Obtener el resultado como List<Object[]> desde la base de datos
+        List<Object[]> rawResults = db.executeQueryArray(query, lastSelectedKey);
+    
+        // Convertir los resultados a una lista de String
+        List<String> vehicles = new ArrayList<>();
+        for (Object[] row : rawResults) {
+            if (row.length > 0 && row[0] != null) {
+                vehicles.add(row[0].toString()); // Convertir el primer valor a String y añadirlo a la lista
+            }
+        }
+        return vehicles;
+    }
+
+    public Integer getVehicleCapacity(String vehicle){
+        String query = "SELECT CAPACITY FROM VEHICLES WHERE VEHICLE_ID = ?";
+        return db.executeQuerySingle(Integer.class, query, vehicle);
+    }
+
+    /*public List<PackageModel> getPackagesTransport(String origen, String destino){
+        String sqlGetPackages = "select DISTINCT p.package_id AS packageId,  p.citySender as citySender, p.status as status from routes r inner join waypoints w on r.route_id = w.route_id " + 
+                        " inner join city co on co.city_id = origin inner join city cd on cd.city_id = destination inner join Packages p on p.citySender = co.city and p.cityRec = cd.city inner join city cw on cw.city_id = w.city_id inner join city cl on cl.city_id = p.actual_location " + 
+                        "where cl.city = ? and (cd.city = ? or cw.city = ?) AND P.STATUS = 'IN TRANSIT' order by package_id";
+        return db.executeQueryPojo(PackageModel.class, sqlGetPackages, origen, destino, destino);
+    }*/
+
+    public List<PackageModel> getPackagesTransport(String origen, String destino) {
+        String sqlGetPackages = "SELECT DISTINCT p.package_id AS packageId, p.citySender AS citySender, p.status AS status " + 
+                                "FROM routes r " + 
+                                "INNER JOIN waypoints w ON r.route_id = w.route_id " + 
+                                "INNER JOIN city co ON co.city_id = r.origin " + 
+                                "INNER JOIN city cd ON cd.city_id = r.destination " + 
+                                "INNER JOIN Packages p ON p.citySender = co.city AND p.cityRec = cd.city " + 
+                                "INNER JOIN city cl ON cl.city_id = p.actual_location " + 
+                                "LEFT JOIN city cw ON cw.city_id = w.city_id " + 
+                                "WHERE cl.city = ? AND (cd.city = ? OR cw.city = ?) " + 
+                                "AND p.status = 'IN TRANSIT' " + 
+                                "ORDER BY p.package_id";
+        return db.executeQueryPojo(PackageModel.class, sqlGetPackages, origen, destino, destino);
+    }
+    
+    
+    
+
+    public PackageModel getPackage(String packageId){
+        String sqlGetPackage = "SELECT package_id packageId, cityRec cityReceiver FROM Packages WHERE package_id = ?";
+        return db.executeQueryPojo(PackageModel.class, sqlGetPackage, packageId).get(0);
+    }
+
+    public void updateVehicleMove(String location, String vehicle) {
+        String query = "UPDATE VEHICLES SET CURRENT_LOCATION = ? WHERE vehicle_id = ?";
+        db.executeUpdate(query, location, vehicle);
+    }
+
+    public void updatePackageMove(Integer location, String destino, String packageId) {
+        String query = "";
+        if (destino.equals("S")) {
+            query = "UPDATE PACKAGES SET actual_location = ?, STATUS='READY FOR DELIVERY' WHERE PACKAGE_ID = ?";
+        } else {
+            query = "UPDATE PACKAGES SET actual_location = ? WHERE PACKAGE_ID = ?";
+        }
+        db.executeUpdate(query, location, packageId);
+
+    }
+    
+    public Integer getCity(String city) {
+        String query = "SELECT CITY_id FROM CITY WHERE CITY = ?";
+        return db.executeQuerySingle(Integer.class, query, city);
     }
 
 }

@@ -1,5 +1,4 @@
 -- Eliminación de tablas si existen
-DROP TABLE IF EXISTS "Users";
 DROP TABLE IF EXISTS "Packages";
 DROP TABLE IF EXISTS "Offices";
 DROP TABLE IF EXISTS "Warehouses";
@@ -13,17 +12,9 @@ DROP TABLE IF EXISTS "Carreras";
 DROP TABLE IF EXISTS "City";
 DROP TABLE IF EXISTS "Waypoints";
 
-CREATE TABLE IF NOT EXISTS "Users" (
-    "user_id" TEXT PRIMARY KEY,
-    "name" TEXT,
-    "email" TEXT,
-    "phone" TEXT
-);
 
 CREATE TABLE IF NOT EXISTS "Packages" (
     "package_id" INTEGER PRIMARY KEY AUTOINCREMENT,
-    "sender_id" TEXT,
-    "receiver_id" TEXT,
     "citySender" TEXT,
     "addressSender" TEXT,
     "cityRec" TEXT,
@@ -33,11 +24,15 @@ CREATE TABLE IF NOT EXISTS "Packages" (
     "length" DECIMAL(10, 2),
     "depth" DECIMAL(10, 2),
     "status" TEXT,
-    "actual_location" INTEGER DEFAULT city,
+    "actual_location" INTEGER DEFAULT null,
     "price" INTEGER,
-    FOREIGN KEY ("sender_id") REFERENCES "Users"("user_id"),
-    FOREIGN KEY ("receiver_id") REFERENCES "Users"("user_id"),
-    FOREIGN KEY ("actual_location") REFERENCES "City"("city_id")
+    "name_sender" TEXT,
+    "email_sender" TEXT,
+    "phone_sender" TEXT,
+    "name_rec" TEXT,
+    "email_rec" TEXT,
+    "phone_rec" TEXT,
+    FOREIGN KEY ("actual_location") REFERENCES "City"("city_id"),
     FOREIGN KEY ("citySender") REFERENCES "City"("city"),
     FOREIGN KEY ("cityRec") REFERENCES "City"("city")
 );
@@ -58,8 +53,9 @@ CREATE TABLE IF NOT EXISTS "Warehouses" (
 
 CREATE TABLE IF NOT EXISTS "Vehicles" (
     "vehicle_id" INTEGER PRIMARY KEY AUTOINCREMENT,
-    "capacity" DECIMAL(10, 2),
-    "current_location" TEXT
+    "capacity" INTEGER,
+    "current_location" TEXT,
+    "type" TEXT
 );
 
 CREATE TABLE IF NOT EXISTS "City" (
@@ -89,8 +85,8 @@ CREATE TABLE IF NOT EXISTS "Shipments" (
     "package_id" INTEGER,
     "route_id" INTEGER,
     "vehicle_id" INTEGER,
-    "pickup_date" DATETIME,
-    "delivery_date" DATETIME,
+    "pickup_date" date,
+    "delivery_date" date,
     FOREIGN KEY ("package_id") REFERENCES "Packages"("package_id"),
     FOREIGN KEY ("route_id") REFERENCES "Routes"("route_id"),
     FOREIGN KEY ("vehicle_id") REFERENCES "Vehicles"("vehicle_id")
@@ -101,7 +97,7 @@ CREATE TABLE IF NOT EXISTS "Package_Tracking" (
     "package_id" INTEGER,
     "location" TEXT,
     "status" TEXT,
-    "timestamp" DATETIME,
+    "timestamp" date,
     FOREIGN KEY ("package_id") REFERENCES "Packages"("package_id")
 );
 
@@ -110,7 +106,7 @@ CREATE TABLE IF NOT EXISTS "Delivery_Attempts" (
     "package_id" INTEGER,
     "attempt_number" INTEGER,
     "status" TEXT,
-    "timestamp" DATETIME,
+    "timestamp" date,
     FOREIGN KEY ("package_id") REFERENCES "Packages"("package_id")
 );
 

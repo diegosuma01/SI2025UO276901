@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -15,134 +14,173 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 
-import giis.demo.tkrun.model.TransportModel;
-
 public class TransportView {
 
     private JFrame frame;
+    private JComboBox<String> comboOrigen;
+    private JComboBox<String> comboDestino;
+    private JComboBox<String> comboVehiculo;
+    private JButton btnFiltrar;
+    private JButton btnMover;
+    private JLabel lblPaquetes;
+    private JLabel lblVehiculo;
+    private JTable tablaPaquetes;
+    private JScrollPane scrollPane;
 
-    private JComboBox<String> comboVehicles;
-    private JTable tabRoutes;
-    private JButton btnCheckPack;
-    private JTable tabPackages;
-    private JButton btnLoad;
-    private JButton btnLoadAll;
-
-    /**
-     * Create the application.
-     */
     public TransportView() {
         initialize();
     }
 
-    /**
-     * Initialize the contents of the frame.
-     */
     private void initialize() {
+        // Inicializar el JFrame
         frame = new JFrame();
-        frame.setTitle("Transport of packages");
-        frame.setName("Transport");
-        frame.setBounds(100, 100, 600, 600);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setTitle("Move a Package");
+        frame.setBounds(0, 0, 800, 600); // Tamaño ajustado
+        frame.setLayout(new BorderLayout());
 
-        JPanel topPanel = new JPanel(new GridBagLayout());
+        // Panel principal con GridBagLayout
+        JPanel panelPrincipal = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
 
+        // Etiqueta y ComboBox para seleccionar el origen
+        JLabel lblOrigen = new JLabel("Select the origin:");
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.WEST;
-        JLabel lblVehicles = new JLabel("Vehicles:");
-        topPanel.add(lblVehicles, gbc);
+        panelPrincipal.add(lblOrigen, gbc);
 
+        comboOrigen = new JComboBox<>(new String[]{
+            "Gijón", "Valencia", "Madrid", "Sevilla", 
+            "Burgos Warehouse", "Zaragoza Warehouse", "Valladolid Warehouse", 
+            "Toledo Warehouse", "Cáceres Warehouse"
+        });
         gbc.gridx = 1;
-        gbc.gridy = 0;
-        comboVehicles = new JComboBox<>();
-        topPanel.add(comboVehicles, gbc);
+        panelPrincipal.add(comboOrigen, gbc);
 
+        // Etiqueta y ComboBox para seleccionar el destino
+        JLabel lblDestino = new JLabel("Select the destiny:");
         gbc.gridx = 0;
         gbc.gridy = 1;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.WEST;
-        JLabel lblRoutes = new JLabel("Routes:");
-        topPanel.add(lblRoutes, gbc);
+        panelPrincipal.add(lblDestino, gbc);
 
-        frame.getContentPane().add(topPanel, BorderLayout.NORTH);
-
-        tabRoutes = new JTable();
-        tabRoutes.setName("tabRoutes");
-        tabRoutes.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tabRoutes.setDefaultEditor(Object.class, null); // readonly
-
-        JScrollPane scrollPaneRoutes = new JScrollPane(tabRoutes); // Encapsulate in JScrollPane
-        frame.getContentPane().add(scrollPaneRoutes, BorderLayout.CENTER);
-
-        JPanel bottomPanel = new JPanel(new GridBagLayout());
-        gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.anchor = GridBagConstraints.WEST;
-        btnCheckPack = new JButton("Check packages");
-        bottomPanel.add(btnCheckPack, gbc);
-
+        comboDestino = new JComboBox<>(new String[]{
+            "Gijón", "Valencia", "Madrid", "Sevilla", 
+            "Burgos Warehouse", "Zaragoza Warehouse", "Valladolid Warehouse", 
+            "Toledo Warehouse", "Cáceres Warehouse"
+        });
         gbc.gridx = 1;
-        btnLoad = new JButton("Load");
-        bottomPanel.add(btnLoad, gbc);
+        panelPrincipal.add(comboDestino, gbc);
 
+        // Botón para filtrar
+        btnFiltrar = new JButton("Filter");
         gbc.gridx = 2;
-        btnLoadAll = new JButton("Load All");
-        bottomPanel.add(btnLoadAll, gbc);
+        panelPrincipal.add(btnFiltrar, gbc);
 
+        // Sección de selección de vehículos
+        lblVehiculo = new JLabel("Vehicles in Gijón:");
+        gbc.gridy = 3;
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridwidth = 3;
+        panelPrincipal.add(lblVehiculo, gbc);
+
+        comboVehiculo = new JComboBox<>();
+        gbc.gridy = 4;
+        gbc.gridx = 0;
+        gbc.gridwidth = 1;
+        panelPrincipal.add(comboVehiculo, gbc);
+
+        // Sección de paquetes
+        lblPaquetes = new JLabel("Packages from Gijón to Madrid");
+        gbc.gridy = 6;
+        gbc.gridx = 0;
+        gbc.gridwidth = 3;
+        panelPrincipal.add(lblPaquetes, gbc);
+
+        // Tabla para mostrar los paquetes
+        String[] columnNames = {"Package", "State", "Destination"};
+        Object[][] data = {
+            {"Package 1", "Initial", "Madrid"},
+            {"Package 2", "In transit", "Madrid"},
+        };
+        tablaPaquetes = new JTable(data, columnNames);
+        tablaPaquetes.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION); // Permite la selección múltiple
+        scrollPane = new JScrollPane(tablaPaquetes);
+        scrollPane.setPreferredSize(new java.awt.Dimension(500, 150));
+        gbc.gridy = 7;
         gbc.gridwidth = 3;
         gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        tabPackages = new JTable();
-        tabPackages.setName("tabPackages");
-        tabPackages.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tabPackages.setDefaultEditor(Object.class, null); // readonly
+        panelPrincipal.add(scrollPane, gbc);
 
-        JScrollPane scrollPanePackages = new JScrollPane(tabPackages); // Encapsulate in JScrollPane
-        bottomPanel.add(scrollPanePackages, gbc);
+        // Botón para mover los paquetes
+        btnMover = new JButton("Move");
+        gbc.gridy = 8;
+        gbc.fill = GridBagConstraints.NONE;
+        panelPrincipal.add(btnMover, gbc);
 
-        frame.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
+        // Agregar el panel principal al JFrame
+        frame.add(panelPrincipal, BorderLayout.CENTER);
 
+        // Ajustar el tamaño de la ventana
+        frame.pack();
         frame.setVisible(true);
     }
 
+    // Métodos para acceder a los componentes desde el controlador
     public JFrame getFrame() {
-        return frame;
+        return this.frame;
     }
 
-    public JComboBox<String> getComboVehicles() {
-        return comboVehicles;
+    public String getSelectedOrigin() {
+        return (String) comboOrigen.getSelectedItem();
     }
 
-    public JTable getTableRoutes() {
-        return tabRoutes;
+    public String getSelectedDestination() {
+        return (String) comboDestino.getSelectedItem();
     }
 
-    public JTable getTablePackages() {
-        return tabPackages;
+    public String getSelectedVehicle() {
+        return (String) comboVehiculo.getSelectedItem();
     }
 
-    public JButton getBtnCheckPack() {
-        return btnCheckPack;
+    public JLabel getLblVehiculo(){
+        return lblVehiculo;
     }
 
-    public JButton getBtnLoad() {
-        return btnLoad;
+    public void setVehicleLabel(String city) {
+        lblVehiculo.setText("Vehicles in " + city);
     }
 
-    public JButton getBtnLoadAll() {
-        return btnLoadAll;
+    public JLabel getLblPackages(){
+        return lblPaquetes;
     }
 
-	public void updateShipmentsTable(List<TransportModel> shipments) {
-		throw new UnsupportedOperationException("Unimplemented method 'updateShipmentsTable'");
-	}
+    public void setPackagesLabel(String origin, String destination) {
+        lblPaquetes.setText("Packages from " + origin + " to " + destination);
+    }
+
+    public JButton getFilterButton() {
+        return btnFiltrar;
+    }
+
+    public JButton getMoveButton() {
+        return btnMover;
+    }
+
+    public JTable getTable() {
+        return tablaPaquetes;
+    }
+
+    public JComboBox<String> getComboOrigen() {
+        return this.comboOrigen;
+    }
+
+    public JComboBox<String> getComboDestino() {
+        return this.comboDestino;
+    }
+
+    public JComboBox<String> getComboVehiculo() {
+        return this.comboVehiculo;
+    }
 }
