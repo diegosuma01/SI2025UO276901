@@ -1,11 +1,11 @@
-package giis.demo.jdbc.ut;
+/*package giis.demo.jdbc.ut;
 
 import giis.demo.jdbc.DemoJdbc;
 import junit.framework.TestCase;
 /**
  * Ejecuta las demo de acceso a base de datos con JDBC
  * (no compara resultados, solo se usa como ejecutor de los demos)
- */
+ *//* 
 public class TestDemoJdbc extends TestCase {
 	public void testDemo1Basic() {
 		DemoJdbc d=new DemoJdbc();
@@ -27,4 +27,9 @@ public class TestDemoJdbc extends TestCase {
 		DemoJdbc d=new DemoJdbc();
 		d.demo5Autoincrement();
 	}
-}
+}*/
+
+package giis.demo.jdbc.ut;
+
+import giis.demo.jdbc.DemoJdbc;
+import junit.framework.TestCase;

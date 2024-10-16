@@ -4,8 +4,10 @@ import giis.demo.tkrun.view.DeliverView;
 import giis.demo.util.SwingMain;
 import giis.demo.util.SwingUtil;
 
+import java.sql.SQLException;
 import java.util.List;
 
+import javax.swing.JOptionPane;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
@@ -33,6 +35,9 @@ public class DeliverController {
 
         view.getVehicleComboBox()
                 .addActionListener(e -> SwingUtil.exceptionWrapper(() -> getDeliveries()));
+
+        view.getFailedButton()
+                .addActionListener(e -> SwingUtil.exceptionWrapper(() -> registerFail()));
     }
     
     public void initView() {
@@ -78,11 +83,43 @@ public class DeliverController {
         
         }
 
-    private void doneDeliver() {
-         String id = SwingUtil.getSelectedKey(view.getPackagesTable());
-         dto.updatePackageStatus(id);
-         getDeliveries();         
-    }
+        private void doneDeliver() {
+            // Check if there is a selected package in the table
+            String selectedId = SwingUtil.getSelectedKey(view.getPackagesTable());
+            if (selectedId == null || selectedId.isEmpty()) {
+                JOptionPane.showMessageDialog(view.getFrame(), "No package selected. Please select a package from the list.", "Selection Required", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        
+            // Check if the ID and Name fields are filled
+            String id = view.getIdField().getText().trim();
+            String name = view.getNameField().getText().trim();
+        
+            if (id.isEmpty() || name.isEmpty()) {
+                JOptionPane.showMessageDialog(view.getFrame(), "Please enter both ID and Name.", "Input Required", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+        
+            // Proceed with updating the package status if validation passes
+            dto.updatePackageStatus(selectedId);
+            view.getIdField().setText("");
+            view.getNameField().setText("");
+            getDeliveries();         
+        }
+        
+        
 
-
+        public void registerFail() {
+            String selectedId = SwingUtil.getSelectedKey(view.getPackagesTable());
+            if (selectedId != null) {
+                dto.updateFail(selectedId); // Llama al método que actualiza el intento
+            } else {
+                JOptionPane.showMessageDialog(null, "No package selected.", "Selection Error", JOptionPane.WARNING_MESSAGE);
+            }
+        }
+        
 }
+
+
+
+

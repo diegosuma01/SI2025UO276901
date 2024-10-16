@@ -1,7 +1,5 @@
 package giis.demo.tkrun.controller;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.table.TableColumnModel;
@@ -10,14 +8,12 @@ import javax.swing.table.TableModel;
 import giis.demo.tkrun.DTOs.TrackDTO;
 import giis.demo.tkrun.DTOs.TransportDTO;
 import giis.demo.tkrun.model.PackageModel;
-import giis.demo.tkrun.model.RoutesModel;
-import giis.demo.tkrun.model.VehiclesModel;
+
 import giis.demo.tkrun.model.TransportModel;
 import giis.demo.tkrun.view.TransportView;
 import giis.demo.util.SwingMain;
 import giis.demo.util.SwingUtil;
-import javafx.event.ActionEvent;
-import giis.demo.tkrun.model.PackageModel;
+
 
 import javax.swing.JOptionPane;
 
