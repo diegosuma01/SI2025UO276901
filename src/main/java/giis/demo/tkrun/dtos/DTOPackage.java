@@ -1,6 +1,6 @@
-package giis.demo.tkrun.model;
+package giis.demo.tkrun.dtos;
 
-public class PackageModel {
+public class DTOPackage {
 
     private String packageId;
     private String name_sender;
@@ -23,14 +23,15 @@ public class PackageModel {
     private String senderName;
     private String receiverName;
     
-    public PackageModel() {
+    public DTOPackage() {
     }
+    
 
-    public PackageModel(String packageId) {
+    public DTOPackage(String packageId) {
         this.packageId = packageId;
     }
 
-    public PackageModel(String citySender, String adressSender,
+    public DTOPackage(String citySender, String adressSender,
             String cityReceiver, String adressReceiver, String status, Double weigth, 
             Double height, Double length, Double depth, Integer price,String name_sender, 
             String name_rec, String EMAIL_REC, String EMAIL_SEND, String PHONE_REC, 

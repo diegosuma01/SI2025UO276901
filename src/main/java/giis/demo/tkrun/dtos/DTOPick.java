@@ -1,9 +1,9 @@
-package giis.demo.tkrun.model;
+package giis.demo.tkrun.dtos;
 
-public class PickModel {
+public class DTOPick {
     // Add your class variables here
     
-    public PickModel() {
+    public DTOPick() {
         // Add your initialization code here
     }
     

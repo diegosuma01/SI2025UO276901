@@ -1,4 +1,4 @@
-package giis.demo.tkrun.DTOs;
+package giis.demo.tkrun.models;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,14 +7,14 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import giis.demo.tkrun.model.PackageModel;
-import giis.demo.tkrun.model.RoutesModel;
-import giis.demo.tkrun.model.TransportModel;
-import giis.demo.tkrun.model.VehiclesModel;
+import giis.demo.tkrun.dtos.DTOPackage;
+import giis.demo.tkrun.dtos.DTORoutes;
+import giis.demo.tkrun.dtos.DTOTransport;
+import giis.demo.tkrun.dtos.DTOVehicle;
 import giis.demo.util.ApplicationException;
 import giis.demo.util.Database;
 
-public class TransportDTO {
+public class TransportModel {
 
 
     private static final String MSG_FILL_DATA = "Fill in all the data";
@@ -25,19 +25,19 @@ public class TransportDTO {
 
     private Database db = new Database();
 
-    public List<VehiclesModel> getVehicles() {
+    public List<DTOVehicle> getVehicles() {
         String sqlGetVehicles = "Select vehicle_id vehicleId from vehicles";
-        return db.executeQueryPojo(VehiclesModel.class, sqlGetVehicles);
+        return db.executeQueryPojo(DTOVehicle.class, sqlGetVehicles);
     }
 
-    public List<RoutesModel> getRoutes(){
+    public List<DTORoutes> getRoutes(){
         String sqlGetRoutes = "SELECT r.route_id AS routeId, (SELECT city FROM City WHERE city_id = r.origin) AS originCity, (SELECT city FROM City WHERE city_id = r.destination) AS destinationCity, (SELECT GROUP_CONCAT(w3.city, ', ') FROM waypoints AS w2 INNER JOIN City AS w3 ON w2.city_id = w3.city_id WHERE w2.route_id = r.route_id) AS waypointsTable FROM routes AS r";
-        return db.executeQueryPojo(RoutesModel.class, sqlGetRoutes);
+        return db.executeQueryPojo(DTORoutes.class, sqlGetRoutes);
     }
 
-    public List<PackageModel> getPackages(String lastSelectedKey){
+    public List<DTOPackage> getPackages(String lastSelectedKey){
         String sqlGetPackages = "SELECT DISTINCT p.package_id AS packageId, u1.name AS senderName, u2.name AS receiverName, p.citySender, p.addressSender AS adressSender, p.cityRec AS cityReceiver, p.addressRec AS adressReceiver, p.status FROM Packages p INNER JOIN Users u1 ON p.sender_id = u1.user_id INNER JOIN Users u2 ON p.receiver_id = u2.user_id INNER JOIN City c ON p.citySender = c.city INNER JOIN Routes r ON r.origin = c.city_id WHERE r.origin = ? AND p.status = 'REGISTERED'";
-        return db.executeQueryPojo(PackageModel.class, sqlGetPackages, lastSelectedKey);
+        return db.executeQueryPojo(DTOPackage.class, sqlGetPackages, lastSelectedKey);
     }
 
     // Método para validar que el paquete existe y está pendiente de envío
@@ -92,13 +92,13 @@ public class TransportDTO {
     }
 
     // Método para obtener todos los envíos realizados
-    public List<TransportModel> getAllShipments() {
-        List<TransportModel> shipments = new ArrayList<>();
+    public List<DTOTransport> getAllShipments() {
+        List<DTOTransport> shipments = new ArrayList<>();
         String sql = "SELECT * FROM Shipments";
         try (PreparedStatement stmt = db.getConnection().prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
-                TransportModel shipment = new TransportModel();
+                DTOTransport shipment = new DTOTransport();
                 shipment.setPackageId(rs.getString("package_id"));
                 shipment.setRouteId1(rs.getInt("route_id"));
                 shipment.setVehicleId(rs.getInt("vehicle_id"));
@@ -114,7 +114,7 @@ public class TransportDTO {
 
     public int getRouteDistance(int routeId) {
         String sql = "SELECT distance FROM Routes WHERE route_id = ?";
-        List<RoutesModel> distanceStr = db.executeQueryPojo(RoutesModel.class, sql, routeId);
+        List<DTORoutes> distanceStr = db.executeQueryPojo(DTORoutes.class, sql, routeId);
         int distance = distanceStr.get(0).getDistance();
         return distance;
     }
@@ -127,7 +127,7 @@ public class TransportDTO {
     
     
 
-    public void createShipment(TransportModel shipment) {
+    public void createShipment(DTOTransport shipment) {
         String sql = "INSERT INTO Shipments (package_id, route_id, vehicle_id, pick_up_date, delivery_date) " +
                      "VALUES (?, ?, ?, ?, ?)";
         LocalDate pickUpDate = shipment.getPickUpDate();
@@ -164,7 +164,7 @@ public class TransportDTO {
         return db.executeQueryPojo(PackageModel.class, sqlGetPackages, origen, destino, destino);
     }*/
 
-    public List<PackageModel> getPackagesTransport(String origen, String destino) {
+    public List<DTOPackage> getPackagesTransport(String origen, String destino) {
         String sqlGetPackages = "SELECT DISTINCT p.package_id AS packageId, p.citySender AS citySender, p.status AS status " + 
                                 "FROM routes r " + 
                                 "INNER JOIN waypoints w ON r.route_id = w.route_id " + 
@@ -176,15 +176,15 @@ public class TransportDTO {
                                 "WHERE cl.city = ? AND (cd.city = ? OR cw.city = ?) " + 
                                 "AND p.status = 'IN TRANSIT' " + 
                                 "ORDER BY p.package_id";
-        return db.executeQueryPojo(PackageModel.class, sqlGetPackages, origen, destino, destino);
+        return db.executeQueryPojo(DTOPackage.class, sqlGetPackages, origen, destino, destino);
     }
     
     
     
 
-    public PackageModel getPackage(String packageId){
+    public DTOPackage getPackage(String packageId){
         String sqlGetPackage = "SELECT package_id packageId, cityRec cityReceiver FROM Packages WHERE package_id = ?";
-        return db.executeQueryPojo(PackageModel.class, sqlGetPackage, packageId).get(0);
+        return db.executeQueryPojo(DTOPackage.class, sqlGetPackage, packageId).get(0);
     }
 
     public void updateVehicleMove(String location, String vehicle) {

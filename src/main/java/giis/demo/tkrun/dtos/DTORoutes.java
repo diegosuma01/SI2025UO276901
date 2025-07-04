@@ -1,9 +1,9 @@
-package giis.demo.tkrun.model;
+package giis.demo.tkrun.dtos;
 
 import java.awt.List;
 import java.util.ArrayList;
 
-public class RoutesModel {
+public class DTORoutes {
 
     private String routeId;
     private String originCity;
@@ -13,14 +13,14 @@ public class RoutesModel {
     private int distance;
 
 
-    public RoutesModel() {
+    public DTORoutes() {
     }
 
-    public RoutesModel(String routeId) {
+    public DTORoutes(String routeId) {
         this.routeId = routeId;
     }
 
-    public RoutesModel(String routeId, String originCity, String destinationCity, ArrayList<String> waypoints, String waypointsTable) {
+    public DTORoutes(String routeId, String originCity, String destinationCity, ArrayList<String> waypoints, String waypointsTable) {
         this.routeId = routeId;
         this.originCity = originCity;
         this.destinationCity = destinationCity;

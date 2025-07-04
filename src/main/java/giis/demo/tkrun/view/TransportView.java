@@ -99,10 +99,10 @@ public class TransportView {
         panelPrincipal.add(lblPaquetes, gbc);
 
         // Tabla para mostrar los paquetes
-        String[] columnNames = {"Package", "State", "Destination"};
+        String[] columnNames = {"packageId", "citySender", "status"};
         Object[][] data = {
-            {"Package 1", "Initial", "Madrid"},
-            {"Package 2", "In transit", "Madrid"},
+            {"", "", ""},
+            {"", "", ""},
         };
         tablaPaquetes = new JTable(data, columnNames);
         tablaPaquetes.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION); // Permite la selección múltiple

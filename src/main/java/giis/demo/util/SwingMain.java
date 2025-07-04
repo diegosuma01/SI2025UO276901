@@ -5,16 +5,16 @@ import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-import giis.demo.tkrun.DTOs.DeliverDTO;
-import giis.demo.tkrun.DTOs.LoadDTO;
-import giis.demo.tkrun.DTOs.PackageDTO;
-import giis.demo.tkrun.DTOs.TransportDTO;
-import giis.demo.tkrun.DTOs.PickDTO;
-import giis.demo.tkrun.DTOs.TrackDTO;
 import giis.demo.tkrun.controller.DeliverController;
 import giis.demo.tkrun.controller.LoadController;
 import giis.demo.tkrun.controller.PackageController;
 import giis.demo.tkrun.controller.TransportController;
+import giis.demo.tkrun.models.DeliverModel;
+import giis.demo.tkrun.models.LoadModel;
+import giis.demo.tkrun.models.PackageModel;
+import giis.demo.tkrun.models.PickModel;
+import giis.demo.tkrun.models.TrackModel;
+import giis.demo.tkrun.models.TransportModel;
 import giis.demo.tkrun.controller.PickController;
 import giis.demo.tkrun.controller.TrackController;
 import giis.demo.tkrun.view.DeliverView;
@@ -58,27 +58,27 @@ public class SwingMain {
         gbc.insets = new Insets(10, 10, 10, 10); // Margen entre los botones
 
         JButton btnRegister = createButton("Register a package", e -> {
-            PackageController controller = new PackageController(new PackageDTO(), new PackageView(), SwingMain.this);
+            PackageController controller = new PackageController(new PackageModel(), new PackageView(), SwingMain.this);
             controller.initController();
         });
         JButton btnPick = createButton("Pick Up a package", e -> {
-            PickController controller = new PickController(new PickDTO(), new PickView(), SwingMain.this, new TrackDTO());
+            PickController controller = new PickController(new PickModel(), new PickView(), SwingMain.this, new TrackModel());
             controller.initController();
         });
         JButton btnTransport = createButton("Move a package", e -> {
-            TransportController controller = new TransportController(new TransportDTO(), new TransportView(), SwingMain.this);
+            TransportController controller = new TransportController(new TransportModel(), new TransportView(), SwingMain.this);
             controller.initController();
         });
         JButton btnTrack = createButton("Track a package", e -> {
-            TrackController controller = new TrackController(new TrackDTO(), new TrackView(), SwingMain.this);
+            TrackController controller = new TrackController(new TrackModel(), new TrackView(), SwingMain.this);
             controller.initController();
         });
         JButton btnDeliver = createButton("Deliver a package", e -> {
-            DeliverController controller = new DeliverController(new DeliverDTO(), new DeliverView(), SwingMain.this);
+            DeliverController controller = new DeliverController(new DeliverModel(), new DeliverView(), SwingMain.this);
             controller.initController();
         });
         JButton btnLoad = createButton("Load a package", e -> {
-            LoadController controller = new LoadController(new LoadDTO(), new LoadView(), SwingMain.this, new PackageDTO());
+            LoadController controller = new LoadController(new LoadModel(), new LoadView(), SwingMain.this, new PackageModel());
             controller.initController();
         });
 

@@ -1,14 +1,18 @@
-package giis.demo.tkrun.DTOs;
+package giis.demo.tkrun.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JComboBox;
 
-import giis.demo.tkrun.model.PackageModel;
+import giis.demo.tkrun.dtos.DTOPackage;
 import giis.demo.util.ApplicationException;
 import giis.demo.util.Database;
 
-public class PackageDTO {
+public class PackageModel {
+
+    public PackageModel() {
+    }
 
 	private static final String MSG_FILL_DATA = "Fill in all the data";
 	private static final String MSG_USER_NOT_EXIST = "The user does not exist";
@@ -43,14 +47,14 @@ public class PackageDTO {
 
 	}
 
-	public List<PackageModel> getPackagesOffice(String lastSelectedKey){
+	public List<DTOPackage> getPackagesOffice(String lastSelectedKey){
         String sqlGetPackages = "SELECT package_id as packageId, name_sender, name_rec, citySender, addressSender as adressSender, cityRec as cityReceiver, addressRec as adressReceiver, status FROM Packages INNER JOIN CITY C ON ACTUAL_LOCATION = CITY_ID WHERE C.CITY = ? and status = 'READY FOR DELIVERY'";
-        return db.executeQueryPojo(PackageModel.class, sqlGetPackages, lastSelectedKey);
+        return db.executeQueryPojo(DTOPackage.class, sqlGetPackages, lastSelectedKey);
     } 
 
-	public List<PackageModel> getPackagesVehicle(String vehicle){
+	public List<DTOPackage> getPackagesVehicle(String vehicle){
         String sqlGetPackages = "SELECT p.package_id as packageId, name_sender, name_rec, citySender, addressSender as adressSender, cityRec as cityReceiver, addressRec as adressReceiver, status FROM Packages p INNER JOIN shipments s on p.package_id = s.package_id WHERE status = 'DELIVERING' and s.vehicle_id = ?";
-        return db.executeQueryPojo(PackageModel.class, sqlGetPackages, vehicle);
+        return db.executeQueryPojo(DTOPackage.class, sqlGetPackages, vehicle);
     }
 	
 	public void addTracking(String object) {
@@ -60,6 +64,19 @@ public class PackageDTO {
 		String sqlPackageTracking = "INSERT INTO PACKAGE_TRACKING (PACKAGE_ID, LOCATION, STATUS, TIMESTAMP) VALUES (?, ?, 'REGISTERED', CURRENT_TIMESTAMP)";
 		db.executeUpdate(sqlPackageTracking, id, object);
 	}
+
+	public List<String> getAllCities() {
+        
+        String sql = "SELECT city FROM City WHERE city NOT LIKE '% Warehouse' ORDER BY city ASC";
+        List<Object[]> rawResults = db.executeQueryArray(sql);
+        List<String> cities = new ArrayList<>();
+        for (Object[] row : rawResults) {
+            if (row.length > 0 && row[0] != null) {
+                cities.add(row[0].toString());
+            }
+        }
+        return cities;
+    }
 
 	public Integer getRouteDistance(String citySender, String cityRec) {
 		if (citySender.equals(cityRec)) {

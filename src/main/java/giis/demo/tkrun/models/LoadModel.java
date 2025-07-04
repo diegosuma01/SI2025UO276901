@@ -1,4 +1,4 @@
-package giis.demo.tkrun.DTOs;
+package giis.demo.tkrun.models;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 import giis.demo.util.Database;
 
-public class LoadDTO {
+public class LoadModel {
 
     private Database db = new Database();
 

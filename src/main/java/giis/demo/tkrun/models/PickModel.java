@@ -1,18 +1,18 @@
-package giis.demo.tkrun.DTOs;
+package giis.demo.tkrun.models;
 
 import java.util.List;
 
-import giis.demo.tkrun.model.PackageModel;
+import giis.demo.tkrun.dtos.DTOPackage;
 import giis.demo.util.Database;
 
-public class PickDTO {
+public class PickModel {
 
 
     private Database db = new Database();
 
-    public List<PackageModel> getPackagesOffice(String lastSelectedKey){
+    public List<DTOPackage> getPackagesOffice(String lastSelectedKey){
         String sqlGetPackages = "SELECT DISTINCT p.package_id AS packageId, p.name_sender AS senderName, p.name_rec AS receiverName, p.citySender, p.addressSender AS adressSender, p.cityRec AS cityReceiver, p.addressRec AS adressReceiver, p.status FROM Packages p  WHERE p.citySender = ? AND p.status = 'REGISTERED'";
-        return db.executeQueryPojo(PackageModel.class, sqlGetPackages, lastSelectedKey);
+        return db.executeQueryPojo(DTOPackage.class, sqlGetPackages, lastSelectedKey);
     }
 
     public void updatePackageStatus(String packageId){

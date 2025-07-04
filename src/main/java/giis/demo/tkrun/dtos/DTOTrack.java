@@ -1,6 +1,6 @@
-package giis.demo.tkrun.model;
+package giis.demo.tkrun.dtos;
 
-public class TrackModel {
+public class DTOTrack {
 
     private String packageId;
     private String location;
@@ -8,14 +8,14 @@ public class TrackModel {
     private String timestamp;
 
 
-    public TrackModel() {
+    public DTOTrack() {
         }
 
-    public TrackModel(String packageId) {
+    public DTOTrack(String packageId) {
         this.packageId = packageId;
     }
 
-    public TrackModel(String packageId, String location, String status, String timestamp) {
+    public DTOTrack(String packageId, String location, String status, String timestamp) {
         this.packageId = packageId;
         this.location = location;
         this.status = status;

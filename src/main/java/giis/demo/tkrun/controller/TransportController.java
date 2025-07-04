@@ -5,11 +5,10 @@ import java.util.List;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
-import giis.demo.tkrun.DTOs.TrackDTO;
-import giis.demo.tkrun.DTOs.TransportDTO;
-import giis.demo.tkrun.model.PackageModel;
-
-import giis.demo.tkrun.model.TransportModel;
+import giis.demo.tkrun.dtos.DTOPackage;
+import giis.demo.tkrun.dtos.DTOTransport;
+import giis.demo.tkrun.models.TrackModel;
+import giis.demo.tkrun.models.TransportModel;
 import giis.demo.tkrun.view.TransportView;
 import giis.demo.util.SwingMain;
 import giis.demo.util.SwingUtil;
@@ -22,15 +21,14 @@ public class TransportController {
 
     private TransportView view;
     private SwingMain main;
-    private TransportDTO dto;
     private TransportModel model;
-    private TrackDTO trackDTO = new TrackDTO();
+    private DTOTransport dto;
+    private TrackModel trackDTO = new TrackModel();
 
-    public TransportController(TransportDTO transportDTO, TransportView transportView, SwingMain swingMain) {
-        this.dto = transportDTO;
+    public TransportController(TransportModel transportModel, TransportView transportView, SwingMain swingMain) {
+        this.model = transportModel;
         this.view =transportView;
         this.main = swingMain;
-        this.model = model;
         this.initView();
     }
 
@@ -48,6 +46,7 @@ public class TransportController {
     public void initView() {
         view.getFrame().setVisible(true);
         view.getFrame().setLocationRelativeTo(null);
+        getVehicles();
         
     }
 
@@ -72,7 +71,7 @@ public class TransportController {
     private void filterPackages() {
         String origen = getSelectedOrigin();
         String destino = getSelectedDestination();
-        List<PackageModel> listPackages = dto.getPackagesTransport(origen, destino);
+        List<DTOPackage> listPackages = model.getPackagesTransport(origen, destino);
         
         TableModel tmodel = SwingUtil.getTableModelFromPojos(listPackages, new String[] { 
             "packageId", "citySender",  "status"});
@@ -86,7 +85,7 @@ public class TransportController {
     }
 
     public Integer getCapacity(String vehiculo) {
-        return dto.getVehicleCapacity(vehiculo);
+        return model.getVehicleCapacity(vehiculo);
     }
 
     // Simulación de la obtención de vehículos desde la base de datos para la ciudad seleccionada
@@ -101,11 +100,11 @@ public class TransportController {
     // Simula una consulta a la base de datos para obtener vehículos disponibles en una ciudad específica
     private List<String> getVehiclesForCity(String city) {
         String lastSelectedKey = this.getSelectedOrigin();
-        return dto.getVehicles(lastSelectedKey);
+        return model.getVehicles(lastSelectedKey);
     }
 
     private void movePackage() {
-        Integer city = dto.getCity(view.getComboDestino().getSelectedItem().toString());
+        Integer city = model.getCity(view.getComboDestino().getSelectedItem().toString());
         //dto.updateVehicleMove(view.getComboDestino().getSelectedItem().toString(), view.getComboVehiculo().getSelectedItem().toString());
         
         String selectedDestination = view.getComboDestino().getSelectedItem() != null ? view.getComboDestino().getSelectedItem().toString() : null;
@@ -124,16 +123,16 @@ public class TransportController {
                 return;
             } else{
                 // Proceed with updating the vehicle move
-                dto.updateVehicleMove(view.getComboDestino().getSelectedItem().toString(), view.getComboVehiculo().getSelectedItem().toString());
+                model.updateVehicleMove(view.getComboDestino().getSelectedItem().toString(), view.getComboVehiculo().getSelectedItem().toString());
                 int[] selectedRows = view.getTable().getSelectedRows(); 
                 for (int i: selectedRows) {
                     String id = (String) view.getTable().getValueAt(i, 0);
-                PackageModel p = dto.getPackage(id);
+                DTOPackage p = model.getPackage(id);
                     if (view.getComboDestino().getSelectedItem().toString().equals(p.getCityReceiver())) {
-                        dto.updatePackageMove(city, "S", id);
+                        model.updatePackageMove(city, "S", id);
                         trackDTO.updateTracking(id, view.getComboDestino().getSelectedItem().toString(), "READY FOR DELIVERY");
                     } else{
-                        dto.updatePackageMove(city, "N", id);
+                        model.updatePackageMove(city, "N", id);
                         trackDTO.updateTracking(id, view.getComboDestino().getSelectedItem().toString(), "IN TRANSIT");
                     }
                 }
@@ -176,7 +175,7 @@ public class TransportController {
             return;
         } else{
             // Proceed with updating the vehicle move
-            dto.updateVehicleMove(selectedDestination, selectedVehicle);
+            model.updateVehicleMove(selectedDestination, selectedVehicle);
         }
         //dto.updateVehicleMove(selectedDestination, selectedVehicle);
 

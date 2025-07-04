@@ -1,4 +1,4 @@
-package giis.demo.tkrun.DTOs;
+package giis.demo.tkrun.models;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,10 +8,10 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
-import giis.demo.tkrun.model.PackageModel;
+import giis.demo.tkrun.dtos.DTOPackage;
 import giis.demo.util.Database;
 
-public class DeliverDTO {
+public class DeliverModel {
 
      private Database db = new Database();
 
@@ -32,9 +32,9 @@ public class DeliverDTO {
         return vehicles;
     }
 
-    public List<PackageModel> getPackages(String lastSelectedKey){
+    public List<DTOPackage> getPackages(String lastSelectedKey){
         String sqlGetPackages = "SELECT p.package_id as packageId, name_sender, name_rec, citySender, addressSender as adressSender, cityRec as cityReceiver, addressRec as adressReceiver, status FROM Packages p inner join shipments s on p.package_id = s.package_id where s.vehicle_id = ?";
-        return db.executeQueryPojo(PackageModel.class, sqlGetPackages, lastSelectedKey);
+        return db.executeQueryPojo(DTOPackage.class, sqlGetPackages, lastSelectedKey);
     } 
 
     public void updatePackageStatus(String id){
@@ -76,56 +76,50 @@ public class DeliverDTO {
         }
     }*/
 
-    public void updateFail(String packageId) {
-        String selectQuery = "SELECT attempt_number FROM Delivery_Attempts WHERE package_id = ?";
-        int currentAttempts = 0;
+        // DeliverModel.java
+        // DeliverModel.java
 
-        try (PreparedStatement stmt = db.getConnection().prepareStatement(selectQuery)) {
-            stmt.setString(1, packageId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    currentAttempts = rs.getInt("attempt_number");
-                }
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error retrieving attempt number: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
-            return; // Exit if there's an error
+    public String updateFail(String packageId) {
+        // Obtenemos la ubicación actual del paquete para el log de tracking.
+        // Asumimos que la tabla Packages tiene una columna 'actual_location' que es un ID de ciudad,
+        // o 'cityRec' si queremos registrar el evento en la ciudad de destino.
+        String locationQuery = "SELECT cityRec FROM Packages WHERE package_id = ?";
+        String location = db.executeQuerySingle(String.class, locationQuery, packageId);
+        
+        // Si no encontramos la ubicación, usamos un valor por defecto para no fallar.
+        if (location == null) {
+            location = "Unknown Location";
         }
 
-        // Check if the current attempts are less than 3
-        if (currentAttempts < 3) {
-            if (currentAttempts == 0) {
-                // First attempt
-                String insertQuery = "INSERT INTO Delivery_Attempts (package_id, attempt_number, status, timestamp) VALUES (?, ?, 'Failed', CURRENT_TIMESTAMP)";
-                try (PreparedStatement stmt = db.getConnection().prepareStatement(insertQuery)) {
-                    stmt.setString(1, packageId);
-                    stmt.setInt(2, 1); // Set to first attempt
-                    stmt.executeUpdate();
-                    JOptionPane.showMessageDialog(null, "First try has been registered.", "Delivery Attempt", JOptionPane.INFORMATION_MESSAGE);
-                } catch (SQLException e) {
-                    JOptionPane.showMessageDialog(null, "Error inserting first delivery attempt: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
-                }
-            } else {
-                // Update the attempt number for existing attempts
-                String updateQuery = "UPDATE Delivery_Attempts SET attempt_number = attempt_number + 1, status = 'Failed', timestamp = CURRENT_TIMESTAMP WHERE package_id = ?";
-                try (PreparedStatement stmt = db.getConnection().prepareStatement(updateQuery)) {
-                    stmt.setString(1, packageId);
-                    stmt.executeUpdate();
-                    // Show a message depending on the attempt number
-                    int newAttemptNumber = currentAttempts + 1; // Calculate new attempt number
-                    if (newAttemptNumber == 2) {
-                        JOptionPane.showMessageDialog(null, "Second try has been registered.", "Delivery Attempt", JOptionPane.INFORMATION_MESSAGE);
-                    } else if (newAttemptNumber == 3) {
-                        JOptionPane.showMessageDialog(null, "Third try has been registered.", "Delivery Attempt", JOptionPane.INFORMATION_MESSAGE);
-                    }
-                } catch (SQLException e) {
-                    JOptionPane.showMessageDialog(null, "Error updating delivery attempt: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        } else {
-            // Notify user if the maximum number of attempts has been reached
-            JOptionPane.showMessageDialog(null, "Maximum number of delivery attempts reached for this package.", "Delivery Error", JOptionPane.WARNING_MESSAGE);
+        // 1. Verificamos el número de intentos actuales
+        String countQuery = "SELECT COUNT(*) FROM Delivery_Attempts WHERE package_id = ?";
+        int currentAttempts = db.executeQuerySingle(Integer.class, countQuery, packageId);
+
+        if (currentAttempts >= 3) {
+            // Si ya se ha llegado al límite, no hacemos nada más y devolvemos el mensaje.
+            return "Maximum delivery attempts reached for this package.";
         }
+
+        // 2. Insertamos el nuevo intento fallido en la tabla Delivery_Attempts
+        int newAttemptNumber = currentAttempts + 1;
+        String insertAttemptQuery = "INSERT INTO Delivery_Attempts (package_id, attempt_number, status, timestamp) VALUES (?, ?, 'Failed', CURRENT_TIMESTAMP)";
+        db.executeUpdate(insertAttemptQuery, packageId, newAttemptNumber);
+        
+        // 3. Actualizamos el estado en la tabla principal de Paquetes
+        String newStatus = "DELIVERY ATTEMPT FAILED";
+        if (newAttemptNumber >= 3) {
+            newStatus = "HELD AT OFFICE"; // Si este es el tercer intento, cambiamos el estado final
+        }
+        String updatePackageStatusQuery = "UPDATE Packages SET status = ? WHERE package_id = ?";
+        db.executeUpdate(updatePackageStatusQuery, newStatus, packageId);
+        
+        // Insertamos el evento en la tabla de seguimiento para que sea visible.
+        String trackStatusMessage = "Delivery Attempt #" + newAttemptNumber + " Failed";
+        String insertTrackingQuery = "INSERT INTO Package_Tracking (package_id, location, status, timestamp) VALUES (?, ?, ?, CURRENT_TIMESTAMP)";
+        db.executeUpdate(insertTrackingQuery, packageId, location, trackStatusMessage);
+
+        // 5. Devolvemos el mensaje de éxito para el controlador
+        return "Delivery attempt #" + newAttemptNumber + " has been registered.";
     }
 }
 

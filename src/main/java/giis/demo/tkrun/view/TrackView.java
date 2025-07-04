@@ -73,7 +73,7 @@ public class TrackView {
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH; // Ocupar todo el ancho y altura
         panel.add(tableScrollPane, gbc);
-
+        /* 
         // Label para el cambio de dirección
         JLabel changeDirectionLabel = new JLabel("In case you want to change the direction, write it here:");
         gbc.gridx = 0;
@@ -106,6 +106,7 @@ public class TrackView {
         changeAddressButton.addActionListener(e -> 
             JOptionPane.showMessageDialog(frame, "Address has been changed successfully!", "Success", JOptionPane.INFORMATION_MESSAGE)
         );
+        */
     }
 
     // Métodos para acceder a los componentes desde el controlador

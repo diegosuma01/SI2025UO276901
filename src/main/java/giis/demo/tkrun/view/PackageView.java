@@ -10,6 +10,7 @@ import javax.swing.JTextField;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 
 
@@ -82,7 +83,8 @@ public class PackageView {
 
         final JLabel lblCitySender = new JLabel("City:");
         frame.getContentPane().add(lblCitySender);
-        comboCitySender = new JComboBox<>(new String[]{"Gijón", "Valencia","Madrid", "Sevilla"});
+        //comboCitySender = new JComboBox<>(new String[]{"Gijón", "Valencia","Madrid", "Sevilla"});
+        comboCitySender = new JComboBox<>();
         frame.getContentPane().add(comboCitySender);
 
         final JLabel lblDirectionSender = new JLabel("Address:");
@@ -121,7 +123,8 @@ public class PackageView {
         
         final JLabel lblCityRec = new JLabel("City:");
         frame.getContentPane().add(lblCityRec);
-        comboCityRec = new JComboBox<>(new String[]{"Gijón", "Valencia","Madrid", "Sevilla"});
+        //comboCityRec = new JComboBox<>(new String[]{"Gijón", "Valencia","Madrid", "Sevilla"});
+        comboCityRec = new JComboBox<>();
         frame.getContentPane().add(comboCityRec);
 
         final JLabel lblDirectionRec = new JLabel("Address:");
@@ -253,6 +256,22 @@ public class PackageView {
             return true;
         } catch (NumberFormatException e) {
             return false;
+        }
+    }
+
+    public void setCityLists(List<String> cities) {
+        // Limpiamos los combo boxes por si tuvieran datos previos
+        comboCitySender.removeAllItems();
+        comboCityRec.removeAllItems();
+        
+        // Añadimos un item por defecto para guiar al usuario
+        comboCitySender.addItem("-- Select Origin City --");
+        comboCityRec.addItem("-- Select Destination City --");
+        
+        // Poblamos ambos combo boxes con la lista de ciudades de la base de datos
+        for (String city : cities) {
+            comboCitySender.addItem(city);
+            comboCityRec.addItem(city);
         }
     }
 

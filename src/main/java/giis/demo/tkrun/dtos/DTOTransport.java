@@ -1,9 +1,9 @@
-package giis.demo.tkrun.model;
+package giis.demo.tkrun.dtos;
 
 import java.time.LocalDate;
 import java.util.List;
 
-public class TransportModel {
+public class DTOTransport {
     
     private String packageId;
     private String routeId;
@@ -15,17 +15,17 @@ public class TransportModel {
     private LocalDate pickUpDate;
     private LocalDate deliveryDate;
 
-    public TransportModel() {
+    public DTOTransport() {
     }
 
-    public TransportModel(String routeId, String originCity, String destinationCity, double distance) {
+    public DTOTransport(String routeId, String originCity, String destinationCity, double distance) {
         this.routeId = routeId;
         this.originCity = originCity;
         this.destinationCity = destinationCity;
         this.distance = distance;
     }
 
-    public TransportModel(String packageId, int routeId2, int vehicleId, LocalDate pickUpDate, LocalDate deliveryDate) {
+    public DTOTransport(String packageId, int routeId2, int vehicleId, LocalDate pickUpDate, LocalDate deliveryDate) {
         
         this.packageId = packageId;
         this.routeId1 = routeId2;

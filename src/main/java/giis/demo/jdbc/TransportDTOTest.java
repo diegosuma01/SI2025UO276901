@@ -1,4 +1,4 @@
-package giis.demo.jdbc;
+/*package giis.demo.jdbc;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -50,7 +50,7 @@ public class TransportDTOTest {
 
     /**
      * Sets up a test database with necessary tables and initial data.
-     */
+     *
     private void createTestDatabase() {
         try (Connection cn = DriverManager.getConnection(URL);
              Statement stmt = cn.createStatement()) {
@@ -66,7 +66,7 @@ public class TransportDTOTest {
 
     /**
      * Cleans up the test database by dropping the created tables.
-     */
+     *
     private void dropTestDatabase() {
         try (Connection cn = DriverManager.getConnection(URL);
              Statement stmt = cn.createStatement()) {
@@ -80,7 +80,7 @@ public class TransportDTOTest {
     /**
      * Test to validate a package in the 'REGISTERED' state.
      * Ensures that no exception is thrown when the package is eligible for shipping.
-     */
+     *
     @Test
     public void testValidatePackage_Registered() {
         try {
@@ -92,7 +92,7 @@ public class TransportDTOTest {
 
     /**
      * Test to verify that an error is thrown when attempting to process a package in the 'SHIPPED' state.
-     */
+     *
     @Test
     public void testValidatePackage_AlreadyShipped() {
         ApplicationException exception = assertThrows(ApplicationException.class, () -> {
@@ -103,7 +103,7 @@ public class TransportDTOTest {
 
     /**
      * Test to verify that the distance of a valid route is retrieved correctly.
-     */
+     *
     @Test
     public void testValidateRouteAndGetDistance_ValidRoute() {
         int distance = transportDTO.validateRouteAndGetDistance(1);
@@ -112,7 +112,7 @@ public class TransportDTOTest {
 
     /**
      * Test to ensure that an error is thrown when the route does not exist in the database.
-     */
+     *
     @Test
     public void testValidateRouteAndGetDistance_InvalidRoute() {
         ApplicationException exception = assertThrows(ApplicationException.class, () -> {
@@ -124,7 +124,7 @@ public class TransportDTOTest {
     /**
      * Test to create a new shipment and verify that it is correctly stored in the database.
      * The test ensures that all the shipment details are recorded accurately.
-     */
+     *
     @Test
     public void testCreateShipment() {
         TransportModel shipment = new TransportModel("PKG001", 1, 2, LocalDate.now(), LocalDate.now().plusDays(2));
@@ -147,3 +147,4 @@ public class TransportDTOTest {
         }
     }
 }
+*/

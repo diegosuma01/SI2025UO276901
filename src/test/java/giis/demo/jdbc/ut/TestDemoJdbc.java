@@ -28,8 +28,3 @@ public class TestDemoJdbc extends TestCase {
 		d.demo5Autoincrement();
 	}
 }*/
-
-package giis.demo.jdbc.ut;
-
-import giis.demo.jdbc.DemoJdbc;
-import junit.framework.TestCase;

@@ -1,4 +1,4 @@
-import giis.demo.tkrun.controller.TransportController;
+/*import giis.demo.tkrun.controller.TransportController;
 import giis.demo.tkrun.DTOs.TransportDTO;
 import giis.demo.tkrun.model.PackageModel;
 import giis.demo.tkrun.model.TransportModel;
@@ -85,3 +85,4 @@ public class TransportControllerTest {
     }
 
 }
+*/

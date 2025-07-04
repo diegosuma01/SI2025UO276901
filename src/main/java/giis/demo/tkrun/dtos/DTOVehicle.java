@@ -1,19 +1,19 @@
-package giis.demo.tkrun.model;
+package giis.demo.tkrun.dtos;
 
-public class VehiclesModel {
+public class DTOVehicle {
 
     private String vehicleId;
     private int capacity;
     private String currentLocation;
 
-    public VehiclesModel() {
+    public DTOVehicle() {
     }
 
-    public VehiclesModel(String vehicleId) {
+    public DTOVehicle(String vehicleId) {
         this.vehicleId = vehicleId;
     }
 
-    public VehiclesModel(String vehicleId, int capacity, String currentLocation) {
+    public DTOVehicle(String vehicleId, int capacity, String currentLocation) {
         this.vehicleId = vehicleId;
         this.capacity = capacity;
         this.currentLocation = currentLocation;
