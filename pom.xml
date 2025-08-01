@@ -38,7 +38,7 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>3.12.4</version> <!-- Usamos una versión compatible con JUnit 4 -->
+			<version>5.18.0</version> <!-- Usamos una versión compatible con JUnit 4 -->
 			<scope>test</scope>
 		</dependency>
 		<!-- pruebas junit con parametros -->
